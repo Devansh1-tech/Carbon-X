@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import ProjectMap from "../components/ProjectMap";
+import { mockProjects } from "../data/mockProjects";
 import {
   TreePine,
   Bot,
@@ -391,24 +393,6 @@ function Participants() {
 
 /* ═══════════════════ IMPACT MAP ═══════════════════ */
 function ImpactMap() {
-  // CSS-only glowing dots representing project locations
-  const dots = [
-    { top: "30%", left: "35%", label: "MP" },
-    { top: "45%", left: "28%", label: "Rajasthan" },
-    { top: "50%", left: "42%", label: "Maharashtra" },
-    { top: "60%", left: "50%", label: "Karnataka" },
-    { top: "25%", left: "55%", label: "UP" },
-    { top: "35%", left: "60%", label: "Bihar" },
-    { top: "40%", left: "48%", label: "Chhattisgarh" },
-    { top: "55%", left: "38%", label: "Gujarat" },
-    { top: "20%", left: "40%", label: "Punjab" },
-    { top: "70%", left: "44%", label: "Kerala" },
-    { top: "65%", left: "52%", label: "Tamil Nadu" },
-    { top: "45%", left: "65%", label: "Odisha" },
-    { top: "50%", left: "72%", label: "West Bengal" },
-    { top: "35%", left: "75%", label: "Assam" },
-  ];
-
   return (
     <section id="impact" className="py-24 bg-gradient-to-b from-carbon to-forest">
       <div className="max-w-7xl mx-auto px-6">
@@ -424,47 +408,9 @@ function ImpactMap() {
           </h2>
         </div>
 
-        {/* Map container */}
-        <div className="relative max-w-3xl mx-auto aspect-[4/3] rounded-3xl border border-white/[0.06] bg-gradient-to-br from-forest/60 to-carbon/80 overflow-hidden">
-          {/* Grid lines */}
-          <div
-            className="absolute inset-0 opacity-10"
-            style={{
-              backgroundImage:
-                "linear-gradient(rgba(52,211,153,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(52,211,153,0.3) 1px, transparent 1px)",
-              backgroundSize: "40px 40px",
-            }}
-          />
-
-          {/* India outline glow */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70%] h-[85%] bg-emerald-500/5 rounded-[40%_60%_55%_45%/50%_40%_60%_50%] blur-[40px]" />
-
-          {/* Dots */}
-          {dots.map((dot, i) => (
-            <div
-              key={i}
-              className="absolute group cursor-pointer"
-              style={{ top: dot.top, left: dot.left }}
-            >
-              {/* Pulse ring */}
-              <span
-                className="absolute -inset-2 rounded-full bg-emerald-400/20 animate-ping"
-                style={{ animationDelay: `${i * 0.3}s`, animationDuration: "3s" }}
-              />
-              {/* Dot */}
-              <span className="relative block w-3 h-3 rounded-full bg-emerald-400 shadow-lg shadow-emerald-400/50 group-hover:scale-150 transition-transform" />
-              {/* Tooltip */}
-              <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs bg-carbon/90 text-emerald-400 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none border border-emerald-400/20">
-                {dot.label}
-              </span>
-            </div>
-          ))}
+        <div className="max-w-4xl mx-auto">
+          <ProjectMap projects={mockProjects} />
         </div>
-
-        <p className="text-center text-gray-400 mt-8 text-lg">
-          Active projects across{" "}
-          <span className="text-emerald-400 font-semibold">14 Indian states</span>
-        </p>
       </div>
     </section>
   );

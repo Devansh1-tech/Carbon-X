@@ -3,6 +3,7 @@ import { NavLink, Link, useNavigate } from "react-router-dom";
 import { useApp } from "../context/AppContext";
 import { mockUsers } from "../data/mockUsers";
 import { mockTransactions } from "../data/mockTransactions";
+import ProjectMap from "../components/ProjectMap";
 import {
   LayoutDashboard, FolderKanban, Users, ArrowLeftRight, BarChart3,
   Settings, LogOut, TrendingUp, Leaf, TreePine, Globe, IndianRupee,
@@ -301,6 +302,12 @@ export default function AdminDashboard() {
                 </div>
               ))}
             </div>
+          </section>
+
+          {/* ── Project Locations Map ── */}
+          <section className="p-6 rounded-2xl bg-[#10131c] border border-white/[0.06]">
+            <h2 className="text-lg font-bold text-white mb-6">Project Locations</h2>
+            <ProjectMap projects={projects} />
           </section>
 
         </div>
