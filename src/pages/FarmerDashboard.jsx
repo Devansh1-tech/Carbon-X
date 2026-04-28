@@ -1,14 +1,15 @@
-import { useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { NavLink, Link, useNavigate } from "react-router-dom";
 import { useApp } from "../context/AppContext";
 import {
   LayoutDashboard, FolderPlus, FolderKanban, Wallet, Store,
   LogOut, Bell, TrendingUp, TrendingDown, Leaf, TreePine,
-  MapPin, ArrowRight, Plus, ChevronRight,
+  MapPin, ArrowRight, Plus, ChevronRight, Bot,
 } from "lucide-react";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
+import { getAIRecommendation } from "../utils/geminiAI";
 
 /* ── Chart mock data ── */
 const chartData = [
@@ -78,6 +79,30 @@ export default function FarmerDashboard() {
     () => projects.filter((p) => p.userId === user.id),
     [projects, user.id]
   );
+
+  /* AI Advisor */
+  const [aiAdvice, setAiAdvice] = useState("");
+  const [aiLoading, setAiLoading] = useState(true);
+  const [displayedAdvice, setDisplayedAdvice] = useState("");
+
+  useEffect(() => {
+    getAIRecommendation(user.role, user.location || "rural India", user.creditsEarned || 0)
+      .then((text) => { setAiAdvice(text); setAiLoading(false); })
+      .catch(() => setAiLoading(false));
+  }, []);
+
+  /* Typewriter effect */
+  useEffect(() => {
+    if (!aiAdvice) return;
+    let i = 0;
+    setDisplayedAdvice("");
+    const timer = setInterval(() => {
+      i++;
+      setDisplayedAdvice(aiAdvice.slice(0, i));
+      if (i >= aiAdvice.length) clearInterval(timer);
+    }, 18);
+    return () => clearInterval(timer);
+  }, [aiAdvice]);
   const lastThreeProjects = userProjects.slice(-3).reverse();
   const totalCredits = user.creditsEarned || userProjects.reduce((s, p) => s + p.creditsGenerated, 0);
   const walletBalance = wallet.balance || user.walletBalance || 0;
@@ -373,6 +398,30 @@ export default function FarmerDashboard() {
                   </span>
                 </div>
               ))}
+            </div>
+          </section>
+
+          {/* ── Section 5: AI Advisor ── */}
+          <section className="p-6 rounded-2xl bg-emerald-500/[0.04] border border-emerald-500/15">
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/15 flex items-center justify-center flex-shrink-0">
+                <Bot className="w-5 h-5 text-emerald-400" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-sm font-bold text-emerald-400 mb-2">🤖 Your AI Advisor</h3>
+                {aiLoading ? (
+                  <div className="space-y-2">
+                    <div className="h-3 rounded bg-white/[0.06] animate-pulse w-full" />
+                    <div className="h-3 rounded bg-white/[0.06] animate-pulse w-4/5" />
+                    <div className="h-3 rounded bg-white/[0.06] animate-pulse w-3/5" />
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-400 leading-relaxed">
+                    {displayedAdvice}<span className="inline-block w-0.5 h-4 bg-emerald-400 ml-0.5 animate-pulse" />
+                  </p>
+                )}
+                <p className="text-[10px] text-gray-600 mt-3">Powered by Google Gemini • Updated now</p>
+              </div>
             </div>
           </section>
 

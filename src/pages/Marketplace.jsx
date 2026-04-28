@@ -10,6 +10,7 @@ import {
   BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer,
 } from "recharts";
+import { generateMarketInsight } from "../utils/geminiAI";
 
 /* ── Chart data ── */
 const tradedByType = [
@@ -98,6 +99,16 @@ export default function Marketplace() {
     setBuyQty(1);
   }, [buyModal, buyQty, buyCredits, userId]);
 
+  /* AI Market Insight */
+  const [marketInsight, setMarketInsight] = useState("");
+  const [insightLoading, setInsightLoading] = useState(true);
+
+  useEffect(() => {
+    generateMarketInsight()
+      .then((text) => { setMarketInsight(text); setInsightLoading(false); })
+      .catch(() => setInsightLoading(false));
+  }, []);
+
   const openBuy = (listing) => { setBuyModal(listing); setBuyQty(1); };
 
   /* ── Filter sidebar content (shared between desktop & mobile) ── */
@@ -167,6 +178,11 @@ export default function Marketplace() {
             <span className="text-gray-500 whitespace-nowrap">Avg Price: <span className="text-gray-300 font-semibold">₹605</span></span>
             <span className="text-gray-500 whitespace-nowrap">24h Volume: <span className="text-gray-300 font-semibold">1,240 credits</span></span>
             <span className="text-gray-500 whitespace-nowrap">Trending: <span className="text-emerald-400 font-semibold">Tree Plantation ↑</span></span>
+            {insightLoading ? (
+              <span className="flex items-center gap-1.5 whitespace-nowrap"><Bot className="w-3 h-3 text-violet-400" /><span className="h-3 w-36 rounded bg-white/[0.06] animate-pulse inline-block" /></span>
+            ) : marketInsight ? (
+              <span className="flex items-center gap-1.5 text-violet-400 whitespace-nowrap font-medium"><Bot className="w-3 h-3" /> {marketInsight}</span>
+            ) : null}
           </div>
         </div>
       </header>

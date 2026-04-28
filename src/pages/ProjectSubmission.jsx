@@ -2,6 +2,7 @@ import { useState, useMemo, useCallback, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useApp } from "../context/AppContext";
 import { calculateCredits } from "../utils/carbonCalculator";
+import { verifyProject } from "../utils/geminiAI";
 import {
   ArrowLeft, ArrowRight, Check, Upload, X, Loader2, MapPin,
   TreePine, Leaf, Zap, Sparkles, ChevronLeft,
@@ -135,7 +136,8 @@ export default function ProjectSubmission() {
   const [imagePreview, setImagePreview] = useState(null);
   const [verifying, setVerifying] = useState(false);
   const [verified, setVerified] = useState(false);
-  const [checks, setChecks] = useState([]);
+  const [aiResult, setAiResult] = useState(null);
+  const [visibleChecks, setVisibleChecks] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const [earnedCredits, setEarnedCredits] = useState(0);
 
@@ -167,24 +169,35 @@ export default function ProjectSubmission() {
     reader.readAsDataURL(file);
   }, []);
 
-  /* ── AI Verification ── */
-  const runVerification = useCallback(() => {
+  /* ── AI Verification (Gemini) ── */
+  const runVerification = useCallback(async () => {
     setVerifying(true);
-    setChecks([]);
+    setAiResult(null);
+    setVisibleChecks(0);
     setVerified(false);
-    const msgs = [
-      "Vegetation detected in satellite imagery",
-      "Land area matches reported data",
-      "No duplicate claims detected",
-    ];
-    setTimeout(() => {
+    try {
+      const la = parseFloat(landArea) || 0;
+      const tp = parseInt(trees) || 0;
+      const result = await verifyProject({
+        title,
+        type,
+        treesPlanted: tp,
+        landArea: la,
+        location: { city: district || village, state },
+      });
+      setAiResult(result);
       setVerifying(false);
       setVerified(true);
-      msgs.forEach((msg, i) => {
-        setTimeout(() => setChecks((prev) => [...prev, msg]), (i + 1) * 500);
-      });
-    }, 2000);
-  }, []);
+      // Stream checks in with 300ms delay
+      const total = result.checksPerformed?.length || 0;
+      for (let i = 1; i <= total; i++) {
+        setTimeout(() => setVisibleChecks(i), i * 300);
+      }
+    } catch (err) {
+      console.error("Verification failed:", err);
+      setVerifying(false);
+    }
+  }, [title, type, trees, landArea, district, village, state]);
 
   /* ── Submit ── */
   const handleSubmit = useCallback(() => {
@@ -481,12 +494,12 @@ export default function ProjectSubmission() {
                 )}
 
                 {/* AI Verification */}
-                <div className="rounded-2xl bg-white/[0.03] border border-white/[0.06] p-5">
+                <div className={`rounded-2xl border p-5 transition-colors ${verified && aiResult ? (aiResult.verified ? 'bg-emerald-500/[0.04] border-emerald-500/15' : 'bg-amber-500/[0.04] border-amber-500/15') : 'bg-white/[0.03] border-white/[0.06]'}`}>
                   <div className="flex items-center gap-2 mb-1">
                     <Sparkles className="w-4 h-4 text-violet-400" />
-                    <span className="text-xs font-semibold text-violet-400 uppercase tracking-wider">AI Verification</span>
+                    <span className="text-xs font-semibold text-violet-400 uppercase tracking-wider">Gemini AI Verification</span>
                   </div>
-                  <p className="text-xs text-gray-500 mb-4">Our AI will verify your project using satellite imagery</p>
+                  <p className="text-xs text-gray-500 mb-4">Powered by Google Gemini — analyzes satellite data & sequestration models</p>
 
                   {!verifying && !verified && (
                     <button onClick={runVerification} className="w-full py-3 rounded-xl bg-violet-500/15 border border-violet-500/25 text-violet-400 text-sm font-semibold hover:bg-violet-500/20 hover:border-violet-500/40 transition-all duration-200 flex items-center justify-center gap-2">
@@ -498,28 +511,74 @@ export default function ProjectSubmission() {
                     <div className="space-y-3">
                       <div className="flex items-center gap-3">
                         <Loader2 className="w-5 h-5 text-violet-400 animate-spin" />
-                        <span className="text-sm text-gray-300">Analyzing satellite imagery...</span>
+                        <span className="text-sm text-gray-300">Gemini is analyzing your project...</span>
                       </div>
+                      {/* Skeleton checks */}
+                      {[1,2,3,4].map(i => (
+                        <div key={i} className="flex items-center gap-3 pl-2">
+                          <div className="w-3 h-3 rounded bg-white/[0.06] animate-pulse" />
+                          <div className="h-3 rounded bg-white/[0.06] animate-pulse" style={{width: `${50 + i * 10}%`}} />
+                        </div>
+                      ))}
                       <div className="h-2 rounded-full bg-white/[0.06] overflow-hidden">
-                        <div className="h-full rounded-full bg-gradient-to-r from-violet-500 to-purple-500 animate-[loadBar_2s_ease-in-out]" />
+                        <div className="h-full rounded-full bg-gradient-to-r from-violet-500 to-purple-500 animate-[loadBar_3s_ease-in-out]" />
                       </div>
                     </div>
                   )}
 
-                  {verified && (
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2 text-emerald-400">
-                        <div className="w-7 h-7 rounded-full bg-emerald-500/20 flex items-center justify-center">
-                          <Check className="w-4 h-4" />
+                  {verified && aiResult && (
+                    <div className="space-y-4">
+                      {/* Score + status */}
+                      <div className="flex items-center gap-4">
+                        {/* Confidence gauge */}
+                        <div className="relative w-16 h-16 flex-shrink-0">
+                          <svg className="w-full h-full -rotate-90" viewBox="0 0 60 60">
+                            <circle cx="30" cy="30" r="24" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="5" />
+                            <circle cx="30" cy="30" r="24" fill="none" stroke={aiResult.verified ? '#10b981' : '#f59e0b'} strokeWidth="5" strokeDasharray={`${Math.PI * 48}`} strokeDashoffset={`${Math.PI * 48 * (1 - aiResult.confidenceScore / 100)}`} strokeLinecap="round" />
+                          </svg>
+                          <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-white">{aiResult.confidenceScore}%</span>
                         </div>
-                        <span className="text-sm font-semibold">AI Verification Complete</span>
+                        <div>
+                          <div className={`flex items-center gap-2 ${aiResult.verified ? 'text-emerald-400' : 'text-amber-400'}`}>
+                            <div className={`w-7 h-7 rounded-full flex items-center justify-center ${aiResult.verified ? 'bg-emerald-500/20' : 'bg-amber-500/20'}`}>
+                              <Check className="w-4 h-4" />
+                            </div>
+                            <span className="text-sm font-semibold">{aiResult.verified ? 'Verification Passed' : 'Needs Review'}</span>
+                          </div>
+                          <p className="text-xs text-gray-500 mt-1">Methodology: {aiResult.methodology}</p>
+                        </div>
                       </div>
-                      {checks.map((msg, i) => (
-                        <div key={i} className="flex items-center gap-2.5 pl-2 animate-[fadeIn_0.3s_ease-out]">
-                          <span className="text-emerald-400 text-xs">✓</span>
-                          <span className="text-xs text-gray-400">{msg}</span>
+                      {/* Checks */}
+                      <div className="space-y-2">
+                        {aiResult.checksPerformed?.slice(0, visibleChecks).map((c, i) => {
+                          const pass = c.result === 'Pass' || c.result === 'Low';
+                          return (
+                            <div key={i} className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.03] animate-[fadeIn_0.3s_ease-out]">
+                              <span className={`text-xs mt-0.5 ${pass ? 'text-emerald-400' : 'text-amber-400'}`}>{pass ? '✓' : '⚠'}</span>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-xs font-semibold text-gray-300">{c.check}</span>
+                                  <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase ${pass ? 'bg-emerald-500/15 text-emerald-400' : 'bg-amber-500/15 text-amber-400'}`}>{c.result}</span>
+                                </div>
+                                <p className="text-[11px] text-gray-500 mt-0.5">{c.detail}</p>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      {/* AI Notes */}
+                      {aiResult.aiNotes && visibleChecks >= (aiResult.checksPerformed?.length || 0) && (
+                        <div className="p-3 rounded-xl bg-violet-500/[0.06] border border-violet-500/15 animate-[fadeIn_0.3s_ease-out]">
+                          <p className="text-xs text-gray-400 leading-relaxed"><span className="text-violet-400 font-semibold">AI Notes:</span> {aiResult.aiNotes}</p>
                         </div>
-                      ))}
+                      )}
+                      {/* Credits recommended */}
+                      {aiResult.creditsRecommended > 0 && visibleChecks >= (aiResult.checksPerformed?.length || 0) && (
+                        <div className="flex items-center gap-2 p-3 rounded-xl bg-emerald-500/[0.06] border border-emerald-500/15 animate-[fadeIn_0.3s_ease-out]">
+                          <Leaf className="w-4 h-4 text-emerald-400" />
+                          <span className="text-sm text-emerald-300 font-semibold">{aiResult.creditsRecommended} credits recommended</span>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
