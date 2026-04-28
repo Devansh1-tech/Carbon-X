@@ -41,6 +41,7 @@ export const mockUsers = [
     email: "sustainability@tatasteel.com",
     password: "demo123",
     role: "company",
+    avatar: "🏢",
     emissionsTotal: 5000,
     offsetCredits: 1200,
     remainingOffset: 3800,
@@ -52,6 +53,7 @@ export const mockUsers = [
     email: "admin@carbonx.io",
     password: "demo123",
     role: "admin",
+    avatar: "⚙️",
     walletBalance: 0,
   },
 ];

@@ -415,9 +415,8 @@ cd Carbon-Footprint-System
 # 2️⃣  Install dependencies
 npm install
 
-# 3️⃣  Set up environment variables
-cp .env.example .env
-# Edit .env with your configuration
+# 3️⃣  Set up environment variables (optional — for Google Maps)
+echo "VITE_GOOGLE_MAPS_KEY=YOUR_KEY_HERE" > .env
 
 # 4️⃣  Start the development server
 npm run dev
@@ -432,9 +431,10 @@ npm run dev
 
 | Role | Email | Password |
 |:---|:---|:---|
-| 🌾 Farmer | `ramesh.patel@gmail.com` | `farmer123` |
-| 🏢 Company | `admin@greencorp.in` | `company123` |
-| 🛡️ Admin | `admin@carbonx.in` | `admin123` |
+| 🌾 Farmer | `ramesh.patel@gmail.com` | `demo123` |
+| 🏢 Company | `sustainability@tatasteel.com` | `demo123` |
+| 🌍 NGO | `contact@greenearthfdn.org` | `demo123` |
+| 🛡️ Admin | `admin@carbonx.io` | `demo123` |
 
 <details>
 <summary><b>📦 All Available Scripts</b></summary>
