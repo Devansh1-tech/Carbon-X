@@ -34,6 +34,7 @@ function appReducer(state, action) {
             (t) => t.buyerId === user.id || t.sellerId === user.id
           ),
         },
+        notifications: [...state.notifications, { message: `👋 Welcome back, ${user.name}!`, type: "info" }],
       };
     }
 
@@ -135,7 +136,7 @@ export function AppProvider({ children }) {
     dispatch({ type: "SUBMIT_PROJECT", payload: newProject });
     dispatch({
       type: "ADD_NOTIFICATION",
-      payload: `Project "${newProject.title}" submitted for verification.`,
+      payload: { message: `🌱 Project "${newProject.title}" submitted! Verification in progress...`, type: "success" },
     });
 
     // Mock verification after 2 seconds
@@ -144,7 +145,7 @@ export function AppProvider({ children }) {
       dispatch({ type: "VERIFY_PROJECT", payload: { projectId: newProject.id, credits } });
       dispatch({
         type: "ADD_NOTIFICATION",
-        payload: `Project "${newProject.title}" verified! ${credits} credits earned.`,
+        payload: { message: `💰 ${credits} Carbon Credits added to your wallet!`, type: "success" },
       });
     }, 2000);
   };
@@ -153,7 +154,7 @@ export function AppProvider({ children }) {
     dispatch({ type: "BUY_CREDITS", payload: { listingId, creditsToBuy, buyerId } });
     dispatch({
       type: "ADD_NOTIFICATION",
-      payload: `Successfully purchased ${creditsToBuy} carbon credits.`,
+      payload: { message: `✅ Purchase successful! ${creditsToBuy} credits transferred.`, type: "success" },
     });
   };
 
