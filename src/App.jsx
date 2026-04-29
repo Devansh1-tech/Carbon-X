@@ -9,6 +9,7 @@ import ProjectSubmission from './pages/ProjectSubmission'
 import Wallet from './pages/Wallet'
 import Marketplace from './pages/Marketplace'
 import OnboardingFlow from './pages/OnboardingFlow'
+import AnalyticsDashboard from './pages/AnalyticsDashboard'
 import ToastContainer from './components/Toast'
 import NotificationCenter from './components/NotificationCenter'
 
@@ -53,6 +54,7 @@ function AnimatedRoutes() {
           <Route path="/submit-project" element={<ProjectSubmission />} />
           <Route path="/wallet" element={<Wallet />} />
           <Route path="/marketplace" element={<Marketplace />} />
+          <Route path="/analytics" element={<AnalyticsDashboard />} />
         </Routes>
       </div>
     </>
