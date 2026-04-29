@@ -275,6 +275,9 @@ function appReducer(state, action) {
     case "DISMISS_ACHIEVEMENT_POPUP":
       return { ...state, achievementPopup: null };
 
+    case "RESET_DEMO":
+      return { ...initialState };
+
     default:
       return state;
   }
@@ -455,9 +458,16 @@ export function AppProvider({ children }) {
   /* ── Watchlist helper ── */
   const toggleWatchlist = useCallback((listing) => {
     dispatch({ type: "TOGGLE_WATCHLIST", payload: listing });
+  }, []);
+
   /* ── Achievement helpers ── */
   const dismissAchievementPopup = useCallback(() => {
     dispatch({ type: "DISMISS_ACHIEVEMENT_POPUP" });
+  }, []);
+
+  /* ── Demo reset ── */
+  const resetDemo = useCallback(() => {
+    dispatch({ type: "RESET_DEMO" });
   }, []);
 
   return (
@@ -483,6 +493,7 @@ export function AppProvider({ children }) {
         completeOnboarding,
         toggleWatchlist,
         dismissAchievementPopup,
+        resetDemo,
         MOCK_ACTIVITIES,
       }}
     >

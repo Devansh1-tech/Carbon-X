@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useApp } from "../context/AppContext";
-import { Bell, LogOut, X, ChevronDown, Search, Heart, Command } from "lucide-react";
+import { Bell, LogOut, X, ChevronDown, Search, Heart, Command, HelpCircle } from "lucide-react";
 
 export default function SharedNavbar() {
   const {
@@ -95,8 +95,17 @@ export default function SharedNavbar() {
             <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider ${roleBadge[user.role] || roleBadge.farmer}`}>{user.role}</span>
           </div>
 
+          {/* Shortcuts ? */}
+          <button
+            onClick={() => document.dispatchEvent(new CustomEvent('toggle-shortcuts'))}
+            className="p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.06] hover:bg-white/[0.08] text-gray-500 hover:text-gray-300 transition-all active:scale-95"
+            title="Keyboard Shortcuts (?)"
+          >
+            <HelpCircle className="w-[18px] h-[18px]" />
+          </button>
+
           {/* Logout */}
-          <button onClick={handleLogout} className="p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.06] hover:bg-red-500/10 hover:border-red-500/20 text-gray-500 hover:text-red-400 transition-all" title="Logout">
+          <button onClick={handleLogout} className="p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.06] hover:bg-red-500/10 hover:border-red-500/20 text-gray-500 hover:text-red-400 transition-all active:scale-95" title="Logout">
             <LogOut className="w-[18px] h-[18px]" />
           </button>
         </div>

@@ -158,3 +158,44 @@ select option {
   background: #1a1e2e;
   color: #e5e7eb;
 }
+
+/* ── Micro-interactions ── */
+
+/* Credit flash green */
+@keyframes creditFlash {
+  0%   { color: #34d399; text-shadow: 0 0 12px rgba(16, 185, 129, 0.6); }
+  100% { color: inherit; text-shadow: none; }
+}
+.credit-flash { animation: creditFlash 1s ease-out; }
+
+/* Card hover lift */
+.card-lift {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.card-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* Button press */
+.btn-press { transition: transform 0.1s; }
+.btn-press:active { transform: scale(0.95); }
+
+/* Sidebar active border slide */
+@keyframes borderSlideIn {
+  0%   { height: 0; opacity: 0; }
+  100% { height: 100%; opacity: 1; }
+}
+.sidebar-active-border {
+  animation: borderSlideIn 0.3s ease-out;
+}
+
+/* Count up support */
+@keyframes countUp {
+  0%   { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.count-up-enter {
+  animation: countUp 0.5s ease-out;
+}
+
