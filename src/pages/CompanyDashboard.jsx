@@ -4,7 +4,7 @@ import { useApp } from "../context/AppContext";
 import {
   LayoutDashboard, ShoppingCart, BarChart3, FileText, Settings,
   LogOut, Bell, TrendingUp, Plus, Bot, Download, Check,
-  Building2, Flame, Leaf, Target, X,
+  Building2, Flame, Leaf, Target, X, Calculator,
 } from "lucide-react";
 import {
   ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid,
@@ -45,6 +45,7 @@ const milestones = [
 const NAV = [
   { to: "/dashboard/company", icon: LayoutDashboard, label: "Overview" },
   { to: "/marketplace", icon: ShoppingCart, label: "Buy Credits" },
+  { to: "/emissions-calculator", icon: Calculator, label: "Emissions Calculator" },
   { to: "/analytics", icon: BarChart3, label: "Analytics" },
   { to: "/dashboard/company", icon: FileText, label: "Reports" },
   { to: "/dashboard/company", icon: Settings, label: "Settings" },
