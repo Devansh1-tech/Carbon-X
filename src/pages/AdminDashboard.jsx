@@ -42,7 +42,7 @@ const NAV = [
   { to: "/dashboard/admin", icon: FolderKanban, label: "Projects" },
   { to: "/dashboard/admin", icon: Users, label: "Users" },
   { to: "/dashboard/admin", icon: ArrowLeftRight, label: "Transactions" },
-  { to: "/dashboard/admin", icon: BarChart3, label: "Platform Stats" },
+  { to: "/analytics", icon: BarChart3, label: "Analytics" },
   { to: "/dashboard/admin", icon: Settings, label: "Settings" },
 ];
 
