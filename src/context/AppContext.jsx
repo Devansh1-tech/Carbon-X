@@ -3,6 +3,7 @@ import { mockProjects } from "../data/mockProjects";
 import { mockMarketplace } from "../data/mockMarketplace";
 import { mockTransactions } from "../data/mockTransactions";
 import { mockUsers } from "../data/mockUsers";
+import { checkAchievements, getAchievement } from "../utils/achievements";
 
 const AppContext = createContext(null);
 
@@ -70,6 +71,9 @@ const initialState = {
 
   // Watchlist
   watchlist: [],
+  // Gamification
+  unlockedAchievements: [],
+  achievementPopup: null,
 };
 
 /* ── Helper: create a rich notification ── */
@@ -260,6 +264,16 @@ function appReducer(state, action) {
           : [...state.watchlist, listing],
       };
     }
+    /* ── Achievements ── */
+    case "UNLOCK_ACHIEVEMENT":
+      return {
+        ...state,
+        unlockedAchievements: [...state.unlockedAchievements, action.payload],
+        achievementPopup: getAchievement(action.payload) || null,
+      };
+
+    case "DISMISS_ACHIEVEMENT_POPUP":
+      return { ...state, achievementPopup: null };
 
     default:
       return state;
@@ -322,6 +336,12 @@ export function AppProvider({ children }) {
         payload: makeNotification("credit_earned", "Credits Earned", `💰 ${credits} carbon credits have been added to your wallet`),
       });
     }, 3000);
+
+    // Check achievements after submit
+    setTimeout(() => {
+      const newAchs = checkAchievements({ ...state, projects: [...state.projects, newProject] });
+      newAchs.forEach(id => dispatch({ type: "UNLOCK_ACHIEVEMENT", payload: id }));
+    }, 100);
   };
 
   const buyCredits = (listingId, creditsToBuy, buyerId) => {
@@ -338,6 +358,12 @@ export function AppProvider({ children }) {
       type: "ADD_RICH_NOTIFICATION",
       payload: makeNotification("purchase_complete", "Purchase Complete", `🛒 Purchase complete. ${creditsToBuy} credits transferred to your wallet.`),
     });
+
+    // Check achievements after buy
+    setTimeout(() => {
+      const newAchs = checkAchievements(state);
+      newAchs.forEach(id => dispatch({ type: "UNLOCK_ACHIEVEMENT", payload: id }));
+    }, 100);
   };
 
   const addNotification = (message) => {
@@ -429,6 +455,9 @@ export function AppProvider({ children }) {
   /* ── Watchlist helper ── */
   const toggleWatchlist = useCallback((listing) => {
     dispatch({ type: "TOGGLE_WATCHLIST", payload: listing });
+  /* ── Achievement helpers ── */
+  const dismissAchievementPopup = useCallback(() => {
+    dispatch({ type: "DISMISS_ACHIEVEMENT_POPUP" });
   }, []);
 
   return (
@@ -453,6 +482,7 @@ export function AppProvider({ children }) {
         triggerPriceAlert,
         completeOnboarding,
         toggleWatchlist,
+        dismissAchievementPopup,
         MOCK_ACTIVITIES,
       }}
     >

@@ -11,9 +11,12 @@ import Marketplace from './pages/Marketplace'
 import Watchlist from './pages/Watchlist'
 import OnboardingFlow from './pages/OnboardingFlow'
 import AnalyticsDashboard from './pages/AnalyticsDashboard'
+import Leaderboard from './pages/Leaderboard'
+import EmissionsCalculator from './pages/EmissionsCalculator'
 import ToastContainer from './components/Toast'
 import NotificationCenter from './components/NotificationCenter'
 import GlobalSearch from './components/GlobalSearch'
+import AchievementPopup from './components/AchievementPopup'
 
 /* ── Loading overlay ── */
 function LoadingOverlay() {
@@ -58,6 +61,8 @@ function AnimatedRoutes() {
           <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/watchlist" element={<Watchlist />} />
           <Route path="/analytics" element={<AnalyticsDashboard />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
+          <Route path="/emissions-calculator" element={<EmissionsCalculator />} />
         </Routes>
       </div>
     </>
@@ -90,6 +95,7 @@ function App() {
         <ToastContainer />
         <NotificationCenter />
         <GlobalSearch isOpen={globalSearchOpen} onClose={() => setGlobalSearchOpen(false)} />
+        <AchievementPopup />
         {/* Demo badge */}
         <div className="fixed bottom-4 left-4 z-[200] px-3 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.08] backdrop-blur-sm">
           <span className="text-[11px] text-gray-500 font-medium">🎭 Hackathon Demo</span>
