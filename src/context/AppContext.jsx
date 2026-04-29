@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer } from "react";
+import { createContext, useContext, useReducer, useCallback } from "react";
 import { mockProjects } from "../data/mockProjects";
 import { mockMarketplace } from "../data/mockMarketplace";
 import { mockTransactions } from "../data/mockTransactions";
@@ -6,6 +6,39 @@ import { mockUsers } from "../data/mockUsers";
 
 const AppContext = createContext(null);
 
+/* ── Notification type configs ── */
+export const NOTIF_TYPES = {
+  credit_earned: { icon: "💰", label: "Credits Earned" },
+  project_verified: { icon: "✅", label: "Project Verified" },
+  purchase_complete: { icon: "🛒", label: "Purchase Complete" },
+  price_alert: { icon: "📊", label: "Price Alert" },
+  ai_recommendation: { icon: "🤖", label: "AI Recommendation" },
+  system: { icon: "ℹ️", label: "System" },
+};
+
+/* ── Mock activity messages for the live feed ── */
+const MOCK_ACTIVITIES = [
+  { icon: "🌾", text: "Ramesh from MP just earned 45 credits" },
+  { icon: "🏢", text: "Tata Steel purchased 200 credits" },
+  { icon: "✅", text: "New project verified in Maharashtra" },
+  { icon: "🌳", text: "Sunita planted 2,000 neem trees in Rajasthan" },
+  { icon: "💰", text: "Green Earth Foundation sold 80 credits" },
+  { icon: "⚡", text: "New solar project submitted from Gujarat" },
+  { icon: "🏢", text: "Reliance Industries offset 500 tons CO₂" },
+  { icon: "🌱", text: "Organic farm in Sehore earned 32 credits" },
+  { icon: "✅", text: "Biochar project in Indore verified" },
+  { icon: "🏢", text: "Adani Green purchased 150 credits" },
+  { icon: "🌾", text: "No-till farming project approved in Satara" },
+  { icon: "💰", text: "Marketplace volume crossed 1,500 credits today" },
+  { icon: "⚡", text: "Wind energy project verified in Jodhpur" },
+  { icon: "🌳", text: "5,000 bamboo saplings planted in Hoshangabad" },
+  { icon: "🏢", text: "Mahindra Group bought 120 credits from NGO" },
+  { icon: "✅", text: "AI verification passed for Narmada Valley project" },
+  { icon: "🌱", text: "Cover crop initiative launched in Pune district" },
+  { icon: "💰", text: "Carbon credit price hit ₹620 — 3-month high!" },
+];
+
+/* ── Initial state ── */
 const initialState = {
   currentUser: null,
   wallet: {
@@ -15,9 +48,37 @@ const initialState = {
   projects: [...mockProjects],
   marketplace: [...mockMarketplace],
   transactions: [...mockTransactions],
+
+  // Legacy notifications (for Toast.jsx backward compat)
   notifications: [],
+
+  // Rich notification system
+  richNotifications: [],
+  showNotificationCenter: false,
+  notificationCenterTab: 0,
+
+  // Price alerts
+  priceAlerts: [],
+  priceAlertsEnabled: false,
+
+  // Live activity feed
+  activityFeed: [],
 };
 
+/* ── Helper: create a rich notification ── */
+function makeNotification(notifType, title, body) {
+  return {
+    id: `notif_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+    notifType,
+    title,
+    body,
+    icon: NOTIF_TYPES[notifType]?.icon || "ℹ️",
+    read: false,
+    timestamp: Date.now(),
+  };
+}
+
+/* ── Reducer ── */
 function appReducer(state, action) {
   switch (action.type) {
     case "LOGIN_USER": {
@@ -35,6 +96,10 @@ function appReducer(state, action) {
           ),
         },
         notifications: [...state.notifications, { message: `👋 Welcome back, ${user.name}!`, type: "info" }],
+        richNotifications: [
+          ...state.richNotifications,
+          makeNotification("system", "Welcome Back!", `Hello ${user.name}, you're now logged in.`),
+        ],
       };
     }
 
@@ -110,11 +175,70 @@ function appReducer(state, action) {
         notifications: [],
       };
 
+    /* ── Rich notification actions ── */
+    case "ADD_RICH_NOTIFICATION":
+      return {
+        ...state,
+        richNotifications: [action.payload, ...state.richNotifications],
+      };
+
+    case "MARK_ALL_READ":
+      return {
+        ...state,
+        richNotifications: state.richNotifications.map((n) => ({ ...n, read: true })),
+      };
+
+    case "DISMISS_NOTIFICATION":
+      return {
+        ...state,
+        richNotifications: state.richNotifications.filter((n) => n.id !== action.payload),
+      };
+
+    /* ── Notification center UI ── */
+    case "TOGGLE_NOTIFICATION_CENTER":
+      return {
+        ...state,
+        showNotificationCenter: action.payload !== undefined ? action.payload : !state.showNotificationCenter,
+      };
+
+    case "SET_NOTIFICATION_CENTER_TAB":
+      return {
+        ...state,
+        notificationCenterTab: action.payload,
+      };
+
+    /* ── Price alerts ── */
+    case "SET_PRICE_ALERTS_ENABLED":
+      return {
+        ...state,
+        priceAlertsEnabled: action.payload,
+      };
+
+    case "ADD_PRICE_ALERT":
+      return {
+        ...state,
+        priceAlerts: [...state.priceAlerts, action.payload],
+      };
+
+    case "REMOVE_PRICE_ALERT":
+      return {
+        ...state,
+        priceAlerts: state.priceAlerts.filter((a) => a.id !== action.payload),
+      };
+
+    /* ── Activity feed ── */
+    case "ADD_ACTIVITY":
+      return {
+        ...state,
+        activityFeed: [action.payload, ...state.activityFeed].slice(0, 50),
+      };
+
     default:
       return state;
   }
 }
 
+/* ── Provider ── */
 export function AppProvider({ children }) {
   const [state, dispatch] = useReducer(appReducer, initialState);
 
@@ -134,27 +258,57 @@ export function AppProvider({ children }) {
       creditsGenerated: 0,
     };
     dispatch({ type: "SUBMIT_PROJECT", payload: newProject });
+
+    // Legacy toast
     dispatch({
       type: "ADD_NOTIFICATION",
       payload: { message: `🌱 Project "${newProject.title}" submitted! Verification in progress...`, type: "success" },
     });
 
-    // Mock verification after 2 seconds
+    // Rich notification — immediate
+    dispatch({
+      type: "ADD_RICH_NOTIFICATION",
+      payload: makeNotification("system", "Project Submitted", `🌱 Your project "${newProject.title}" is under AI verification`),
+    });
+
+    // Mock verification after 3 seconds
     setTimeout(() => {
       const credits = newProject.creditsGenerated || Math.round(Math.random() * 100 + 20);
       dispatch({ type: "VERIFY_PROJECT", payload: { projectId: newProject.id, credits } });
+
+      // Legacy toast
       dispatch({
         type: "ADD_NOTIFICATION",
         payload: { message: `💰 ${credits} Carbon Credits added to your wallet!`, type: "success" },
       });
-    }, 2000);
+
+      // Rich notification — verified
+      dispatch({
+        type: "ADD_RICH_NOTIFICATION",
+        payload: makeNotification("project_verified", "Project Verified!", `✅ Project verified! ${credits} credits added to wallet`),
+      });
+
+      // Credit earned notification
+      dispatch({
+        type: "ADD_RICH_NOTIFICATION",
+        payload: makeNotification("credit_earned", "Credits Earned", `💰 ${credits} carbon credits have been added to your wallet`),
+      });
+    }, 3000);
   };
 
   const buyCredits = (listingId, creditsToBuy, buyerId) => {
     dispatch({ type: "BUY_CREDITS", payload: { listingId, creditsToBuy, buyerId } });
+
+    // Legacy toast
     dispatch({
       type: "ADD_NOTIFICATION",
       payload: { message: `✅ Purchase successful! ${creditsToBuy} credits transferred.`, type: "success" },
+    });
+
+    // Rich notification
+    dispatch({
+      type: "ADD_RICH_NOTIFICATION",
+      payload: makeNotification("purchase_complete", "Purchase Complete", `🛒 Purchase complete. ${creditsToBuy} credits transferred to your wallet.`),
     });
   };
 
@@ -166,6 +320,79 @@ export function AppProvider({ children }) {
     dispatch({ type: "CLEAR_NOTIFICATIONS" });
   };
 
+  /* ── Rich notification helpers ── */
+  const addRichNotification = useCallback((notifType, title, body) => {
+    dispatch({ type: "ADD_RICH_NOTIFICATION", payload: makeNotification(notifType, title, body) });
+  }, []);
+
+  const markAllRead = useCallback(() => {
+    dispatch({ type: "MARK_ALL_READ" });
+  }, []);
+
+  const dismissNotification = useCallback((id) => {
+    dispatch({ type: "DISMISS_NOTIFICATION", payload: id });
+  }, []);
+
+  const toggleNotificationCenter = useCallback((value) => {
+    dispatch({ type: "TOGGLE_NOTIFICATION_CENTER", payload: value });
+  }, []);
+
+  const setNotificationCenterTab = useCallback((tab) => {
+    dispatch({ type: "SET_NOTIFICATION_CENTER_TAB", payload: tab });
+  }, []);
+
+  /* ── Price alert helpers ── */
+  const setPriceAlertsEnabled = useCallback((enabled) => {
+    dispatch({ type: "SET_PRICE_ALERTS_ENABLED", payload: enabled });
+  }, []);
+
+  const addPriceAlert = useCallback((direction, threshold) => {
+    dispatch({
+      type: "ADD_PRICE_ALERT",
+      payload: {
+        id: `pa_${Date.now()}`,
+        direction,
+        threshold: parseFloat(threshold),
+        enabled: true,
+        triggered: false,
+      },
+    });
+  }, []);
+
+  const removePriceAlert = useCallback((id) => {
+    dispatch({ type: "REMOVE_PRICE_ALERT", payload: id });
+  }, []);
+
+  /* ── Activity feed helper ── */
+  const addActivity = useCallback((icon, text) => {
+    dispatch({
+      type: "ADD_ACTIVITY",
+      payload: {
+        id: `act_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+        icon,
+        text,
+        timestamp: Date.now(),
+      },
+    });
+  }, []);
+
+  /* ── Trigger price alert notification ── */
+  const triggerPriceAlert = useCallback((alert, currentPrice) => {
+    const dir = alert.direction === "above" ? "above" : "below";
+    const body = `📊 Carbon credit price is now ₹${currentPrice.toFixed(2)} — ${dir} your ₹${alert.threshold} threshold!`;
+
+    dispatch({
+      type: "ADD_RICH_NOTIFICATION",
+      payload: makeNotification("price_alert", "Price Alert Triggered!", body),
+    });
+
+    // Also add as toast
+    dispatch({
+      type: "ADD_NOTIFICATION",
+      payload: { message: body, type: "warning" },
+    });
+  }, []);
+
   return (
     <AppContext.Provider
       value={{
@@ -176,6 +403,17 @@ export function AppProvider({ children }) {
         buyCredits,
         addNotification,
         clearNotifications,
+        addRichNotification,
+        markAllRead,
+        dismissNotification,
+        toggleNotificationCenter,
+        setNotificationCenterTab,
+        setPriceAlertsEnabled,
+        addPriceAlert,
+        removePriceAlert,
+        addActivity,
+        triggerPriceAlert,
+        MOCK_ACTIVITIES,
       }}
     >
       {children}

@@ -24,6 +24,36 @@
   to { transform: rotate(360deg); }
 }
 
+@keyframes slideInRight {
+  0%   { transform: translateX(100%); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes slideOutRight {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes activitySlideIn {
+  0%   { opacity: 0; transform: translateX(-20px); max-height: 0; padding-top: 0; padding-bottom: 0; }
+  100% { opacity: 1; transform: translateX(0); max-height: 120px; }
+}
+
+@keyframes backdropFadeIn {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes backdropFadeOut {
+  0%   { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+  50%      { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
