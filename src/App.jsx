@@ -9,6 +9,7 @@ import ProjectSubmission from './pages/ProjectSubmission'
 import Wallet from './pages/Wallet'
 import Marketplace from './pages/Marketplace'
 import ToastContainer from './components/Toast'
+import NotificationCenter from './components/NotificationCenter'
 
 /* ── Loading overlay ── */
 function LoadingOverlay() {
@@ -62,6 +63,7 @@ function App() {
       <div className="min-h-screen bg-carbon">
         <AnimatedRoutes />
         <ToastContainer />
+        <NotificationCenter />
         {/* Demo badge */}
         <div className="fixed bottom-4 left-4 z-[200] px-3 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.08] backdrop-blur-sm">
           <span className="text-[11px] text-gray-500 font-medium">🎭 Hackathon Demo</span>
