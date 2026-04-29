@@ -15,7 +15,8 @@ const ROLES = [
 const DEMO_PASSWORD = "demo123";
 
 /* ── Redirect helper ── */
-function getRedirectPath(role) {
+function getRedirectPath(role, isNewUser) {
+  if (isNewUser) return "/onboarding";
   if (role === "farmer" || role === "ngo") return "/dashboard/farmer";
   if (role === "company") return "/dashboard/company";
   if (role === "admin") return "/dashboard/admin";
@@ -101,7 +102,7 @@ function LoadingOverlay({ role }) {
 export default function LoginPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { login, currentUser } = useApp();
+  const { login, currentUser, isNewUser } = useApp();
 
   /* ── State ── */
   const [selectedRole, setSelectedRole] = useState("farmer");
@@ -128,9 +129,9 @@ export default function LoginPage() {
   /* ── Redirect if already logged in ── */
   useEffect(() => {
     if (currentUser && !loading) {
-      navigate(getRedirectPath(currentUser.role), { replace: true });
+      navigate(getRedirectPath(currentUser.role, isNewUser), { replace: true });
     }
-  }, [currentUser, navigate, loading]);
+  }, [currentUser, navigate, loading, isNewUser]);
 
   /* ── Login handler ── */
   const handleLogin = useCallback(
@@ -157,7 +158,12 @@ export default function LoginPage() {
         login(finalEmail, finalPassword);
         setTimeout(() => {
           setLoading(false);
-          navigate(getRedirectPath(finalRole), { replace: true });
+          /* Check if this user is new by looking up the mock data */
+          const matchedUser = mockUsers.find(
+            (u) => u.email === finalEmail && u.password === finalPassword
+          );
+          const userIsNew = matchedUser?.isNewUser || false;
+          navigate(getRedirectPath(finalRole, userIsNew), { replace: true });
         }, 200);
       }, 1500);
     },

@@ -63,6 +63,10 @@ const initialState = {
 
   // Live activity feed
   activityFeed: [],
+
+  // Onboarding
+  isNewUser: false,
+  onboardingProfile: {},
 };
 
 /* ── Helper: create a rich notification ── */
@@ -89,6 +93,7 @@ function appReducer(state, action) {
       return {
         ...state,
         currentUser: user,
+        isNewUser: user.isNewUser || false,
         wallet: {
           balance: user.walletBalance || 0,
           transactions: state.transactions.filter(
@@ -231,6 +236,14 @@ function appReducer(state, action) {
       return {
         ...state,
         activityFeed: [action.payload, ...state.activityFeed].slice(0, 50),
+      };
+
+    /* ── Onboarding ── */
+    case "COMPLETE_ONBOARDING":
+      return {
+        ...state,
+        isNewUser: false,
+        onboardingProfile: action.payload || {},
       };
 
     default:
@@ -393,6 +406,11 @@ export function AppProvider({ children }) {
     });
   }, []);
 
+  /* ── Onboarding helper ── */
+  const completeOnboarding = useCallback((profileData) => {
+    dispatch({ type: "COMPLETE_ONBOARDING", payload: profileData });
+  }, []);
+
   return (
     <AppContext.Provider
       value={{
@@ -413,6 +431,7 @@ export function AppProvider({ children }) {
         removePriceAlert,
         addActivity,
         triggerPriceAlert,
+        completeOnboarding,
         MOCK_ACTIVITIES,
       }}
     >
