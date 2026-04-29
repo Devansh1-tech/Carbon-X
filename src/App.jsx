@@ -11,6 +11,7 @@ import Marketplace from './pages/Marketplace'
 import OnboardingFlow from './pages/OnboardingFlow'
 import AnalyticsDashboard from './pages/AnalyticsDashboard'
 import Leaderboard from './pages/Leaderboard'
+import EmissionsCalculator from './pages/EmissionsCalculator'
 import ToastContainer from './components/Toast'
 import NotificationCenter from './components/NotificationCenter'
 import AchievementPopup from './components/AchievementPopup'
@@ -58,6 +59,7 @@ function AnimatedRoutes() {
           <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/analytics" element={<AnalyticsDashboard />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
+          <Route path="/emissions-calculator" element={<EmissionsCalculator />} />
         </Routes>
       </div>
     </>
