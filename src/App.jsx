@@ -8,6 +8,7 @@ import AdminDashboard from './pages/AdminDashboard'
 import ProjectSubmission from './pages/ProjectSubmission'
 import Wallet from './pages/Wallet'
 import Marketplace from './pages/Marketplace'
+import OnboardingFlow from './pages/OnboardingFlow'
 import ToastContainer from './components/Toast'
 import NotificationCenter from './components/NotificationCenter'
 
@@ -45,6 +46,7 @@ function AnimatedRoutes() {
         <Routes location={location}>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/onboarding" element={<OnboardingFlow />} />
           <Route path="/dashboard/farmer" element={<FarmerDashboard />} />
           <Route path="/dashboard/company" element={<CompanyDashboard />} />
           <Route path="/dashboard/admin" element={<AdminDashboard />} />

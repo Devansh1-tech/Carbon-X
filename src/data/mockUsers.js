@@ -10,6 +10,7 @@ export const mockUsers = [
     creditsEarned: 340,
     projectsSubmitted: 3,
     walletBalance: 280,
+    isNewUser: true,
   },
   {
     id: "usr_002",
@@ -22,6 +23,7 @@ export const mockUsers = [
     creditsEarned: 185,
     projectsSubmitted: 2,
     walletBalance: 145,
+    isNewUser: true,
   },
   {
     id: "usr_003",
@@ -34,6 +36,7 @@ export const mockUsers = [
     creditsEarned: 1250,
     projectsSubmitted: 5,
     walletBalance: 870,
+    isNewUser: true,
   },
   {
     id: "usr_004",
@@ -46,6 +49,7 @@ export const mockUsers = [
     offsetCredits: 1200,
     remainingOffset: 3800,
     walletBalance: 4200,
+    isNewUser: true,
   },
   {
     id: "usr_005",
@@ -55,5 +59,6 @@ export const mockUsers = [
     role: "admin",
     avatar: "⚙️",
     walletBalance: 0,
+    isNewUser: true,
   },
 ];
