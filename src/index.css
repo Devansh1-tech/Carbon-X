@@ -95,3 +95,66 @@
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
+
+/* Global Search */
+@keyframes globalSearchSlideIn {
+  0%   { opacity: 0; transform: translateY(-20px) scale(0.97); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.globalSearchScrollbar::-webkit-scrollbar { width: 4px; }
+.globalSearchScrollbar::-webkit-scrollbar-track { background: transparent; }
+.globalSearchScrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 2px; }
+
+/* Dual Range Slider */
+.dual-range-track {
+  position: relative;
+  height: 6px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 3px;
+}
+.dual-range-fill {
+  position: absolute;
+  height: 100%;
+  background: linear-gradient(90deg, #10b981, #34d399);
+  border-radius: 3px;
+}
+.dual-range-thumb {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 18px;
+  height: 18px;
+  background: #10b981;
+  border: 2px solid #0f1117;
+  border-radius: 50%;
+  cursor: grab;
+  transition: box-shadow 0.2s;
+  z-index: 2;
+}
+.dual-range-thumb:hover,
+.dual-range-thumb:active {
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.25);
+}
+.dual-range-thumb:active { cursor: grabbing; }
+
+/* Search highlight */
+mark.search-highlight {
+  background: rgba(250, 204, 21, 0.3);
+  color: #fde68a;
+  padding: 0 2px;
+  border-radius: 2px;
+}
+
+/* View transition */
+.marketplace-grid-enter { animation: fadeUp 0.3s ease-out; }
+@keyframes fadeUp {
+  0%   { opacity: 0; transform: translateY(12px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Select dropdown dark */
+select option {
+  background: #1a1e2e;
+  color: #e5e7eb;
+}

@@ -69,6 +69,8 @@ const initialState = {
   isNewUser: false,
   onboardingProfile: {},
 
+  // Watchlist
+  watchlist: [],
   // Gamification
   unlockedAchievements: [],
   achievementPopup: null,
@@ -251,6 +253,17 @@ function appReducer(state, action) {
         onboardingProfile: action.payload || {},
       };
 
+    /* ── Watchlist ── */
+    case "TOGGLE_WATCHLIST": {
+      const listing = action.payload;
+      const exists = state.watchlist.some((w) => w.id === listing.id);
+      return {
+        ...state,
+        watchlist: exists
+          ? state.watchlist.filter((w) => w.id !== listing.id)
+          : [...state.watchlist, listing],
+      };
+    }
     /* ── Achievements ── */
     case "UNLOCK_ACHIEVEMENT":
       return {
@@ -439,6 +452,9 @@ export function AppProvider({ children }) {
     dispatch({ type: "COMPLETE_ONBOARDING", payload: profileData });
   }, []);
 
+  /* ── Watchlist helper ── */
+  const toggleWatchlist = useCallback((listing) => {
+    dispatch({ type: "TOGGLE_WATCHLIST", payload: listing });
   /* ── Achievement helpers ── */
   const dismissAchievementPopup = useCallback(() => {
     dispatch({ type: "DISMISS_ACHIEVEMENT_POPUP" });
@@ -465,6 +481,7 @@ export function AppProvider({ children }) {
         addActivity,
         triggerPriceAlert,
         completeOnboarding,
+        toggleWatchlist,
         dismissAchievementPopup,
         MOCK_ACTIVITIES,
       }}
