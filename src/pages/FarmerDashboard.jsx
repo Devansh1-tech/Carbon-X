@@ -12,6 +12,7 @@ import {
 import { getAIRecommendation } from "../utils/geminiAI";
 import PriceTicker from "../components/PriceTicker";
 import CertificateGenerator from "../components/CertificateGenerator";
+import ActivityFeed from "../components/ActivityFeed";
 
 /* ── Chart mock data ── */
 const chartData = [
@@ -37,14 +38,7 @@ const STATUS_STYLE = {
   rejected: { bg: "bg-red-500/15", text: "text-red-400", dot: "bg-red-400" },
 };
 
-/* ── Mock activity feed ── */
-const activityFeed = [
-  { id: 1, icon: "✅", text: "Project \"Narmada Valley Reforestation\" Verified", credits: "+180", positive: true, time: "2 hours ago" },
-  { id: 2, icon: "💰", text: "Credits Sold to Tata Steel Industries", credits: "-50", positive: false, time: "5 hours ago" },
-  { id: 3, icon: "📄", text: "New Project \"Biochar Pilot\" Submitted", credits: "0", positive: true, time: "1 day ago" },
-  { id: 4, icon: "✅", text: "Project \"Organic Soil Enrichment\" Verified", credits: "+95", positive: true, time: "3 days ago" },
-  { id: 5, icon: "💰", text: "Credits Sold — Marketplace Transaction", credits: "-30", positive: false, time: "1 week ago" },
-];
+/* ── (Activity feed is now a live component — see ActivityFeed.jsx) ── */
 
 /* ── Sidebar nav items ── */
 const NAV = [
@@ -69,7 +63,7 @@ function ChartTooltip({ active, payload, label }) {
 /* ═══════════════════ FARMER DASHBOARD ═══════════════════ */
 export default function FarmerDashboard() {
   const navigate = useNavigate();
-  const { currentUser, projects, wallet, notifications, logout } = useApp();
+  const { currentUser, projects, wallet, richNotifications, logout, toggleNotificationCenter } = useApp();
 
   const user = currentUser || {
     id: "usr_001", name: "Ramesh Patel", role: "farmer",
@@ -196,12 +190,15 @@ export default function FarmerDashboard() {
                 <span className="hidden sm:inline">Submit New Project</span>
               </Link>
 
-              {/* Notification bell */}
-              <button className="relative p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.06] hover:bg-white/[0.08] transition-colors">
+              {/* Notification bell — opens NotificationCenter */}
+              <button
+                onClick={() => toggleNotificationCenter(true)}
+                className="relative p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.06] hover:bg-white/[0.08] transition-colors"
+              >
                 <Bell className="w-[18px] h-[18px] text-gray-400" />
-                {notifications.length > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
-                    {notifications.length}
+                {richNotifications.filter((n) => !n.read).length > 0 && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 text-white text-[10px] font-bold flex items-center justify-center" style={{ animation: "pulseGlow 2s infinite" }}>
+                    {Math.min(richNotifications.filter((n) => !n.read).length, 9)}
                   </span>
                 )}
               </button>
@@ -399,29 +396,8 @@ export default function FarmerDashboard() {
             </div>
           </section>
 
-          {/* ── Section 4: Activity Feed ── */}
-          <section className="p-6 rounded-2xl bg-[#151823] border border-white/[0.06]">
-            <h2 className="text-lg font-bold text-white mb-5">Recent Activity</h2>
-            <div className="space-y-0">
-              {activityFeed.map((item, idx) => (
-                <div
-                  key={item.id}
-                  className={`flex items-center gap-4 py-4 ${idx !== activityFeed.length - 1 ? "border-b border-white/[0.04]" : ""}`}
-                >
-                  <div className="w-10 h-10 rounded-xl bg-white/[0.04] flex items-center justify-center text-lg flex-shrink-0">
-                    {item.icon}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm text-gray-300 truncate">{item.text}</p>
-                    <p className="text-xs text-gray-600 mt-0.5">{item.time}</p>
-                  </div>
-                  <span className={`text-sm font-bold flex-shrink-0 ${item.positive ? "text-emerald-400" : "text-red-400"}`}>
-                    {item.credits !== "0" ? item.credits + " credits" : "—"}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </section>
+          {/* ── Section 4: Live Activity Feed ── */}
+          <ActivityFeed />
 
           {/* ── Section 5: AI Advisor ── */}
           <section className="p-6 rounded-2xl bg-emerald-500/[0.04] border border-emerald-500/15">

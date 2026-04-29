@@ -92,7 +92,7 @@ function ChartTip({ active, payload, label }) {
 /* ═══ COMPANY DASHBOARD ═══ */
 export default function CompanyDashboard() {
   const navigate = useNavigate();
-  const { currentUser, notifications, logout } = useApp();
+  const { currentUser, richNotifications, logout, toggleNotificationCenter } = useApp();
   const [toast, setToast] = useState("");
   const [certData, setCertData] = useState(null);
 
@@ -153,9 +153,9 @@ export default function CompanyDashboard() {
               <Link to="/marketplace" className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-sky-500 to-blue-500 text-white text-sm font-semibold hover:shadow-lg hover:shadow-sky-500/25 hover:-translate-y-0.5 active:translate-y-0 transition-all">
                 <Plus className="w-4 h-4" /><span className="hidden sm:inline">Buy More Credits</span>
               </Link>
-              <button className="relative p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.06] hover:bg-white/[0.08] transition-colors">
+              <button onClick={() => toggleNotificationCenter(true)} className="relative p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.06] hover:bg-white/[0.08] transition-colors">
                 <Bell className="w-[18px] h-[18px] text-gray-400" />
-                {notifications.length > 0 && <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">{notifications.length}</span>}
+                {richNotifications.filter((n) => !n.read).length > 0 && <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 text-white text-[10px] font-bold flex items-center justify-center" style={{ animation: "pulseGlow 2s infinite" }}>{Math.min(richNotifications.filter((n) => !n.read).length, 9)}</span>}
               </button>
               <div className="hidden sm:flex items-center gap-2.5 pl-3 pr-4 py-1.5 rounded-xl bg-white/[0.04] border border-white/[0.06]">
                 <span className="text-lg">🏢</span>
