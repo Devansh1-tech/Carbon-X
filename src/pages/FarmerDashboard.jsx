@@ -4,13 +4,14 @@ import { useApp } from "../context/AppContext";
 import {
   LayoutDashboard, FolderPlus, FolderKanban, Wallet, Store,
   LogOut, Bell, TrendingUp, TrendingDown, Leaf, TreePine,
-  MapPin, ArrowRight, Plus, ChevronRight, Bot,
+  MapPin, ArrowRight, Plus, ChevronRight, Bot, Award,
 } from "lucide-react";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
 import { getAIRecommendation } from "../utils/geminiAI";
 import PriceTicker from "../components/PriceTicker";
+import CertificateGenerator from "../components/CertificateGenerator";
 
 /* ── Chart mock data ── */
 const chartData = [
@@ -108,6 +109,7 @@ export default function FarmerDashboard() {
   const totalCredits = user.creditsEarned || userProjects.reduce((s, p) => s + p.creditsGenerated, 0);
   const walletBalance = wallet.balance || user.walletBalance || 0;
   const co2Saved = walletBalance * 1; // 1 credit = 1 ton
+  const [certData, setCertData] = useState(null);
 
   const handleLogout = () => { logout(); navigate("/login"); };
 
@@ -370,9 +372,26 @@ export default function FarmerDashboard() {
                         </div>
                       </div>
 
-                      <button className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl bg-white/[0.04] border border-white/[0.06] text-gray-400 text-xs font-medium hover:bg-emerald-500/10 hover:text-emerald-400 hover:border-emerald-500/20 transition-all duration-200">
+                      <div className="flex gap-2">
+                      <button className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-white/[0.04] border border-white/[0.06] text-gray-400 text-xs font-medium hover:bg-emerald-500/10 hover:text-emerald-400 hover:border-emerald-500/20 transition-all duration-200">
                         View Details <ArrowRight className="w-3.5 h-3.5" />
                       </button>
+                      {project.status === "verified" && (
+                        <button
+                          onClick={() => setCertData({
+                            recipientName: user.name,
+                            creditsAmount: project.creditsGenerated,
+                            projectTitle: project.title,
+                            projectType: typeStyle.label.replace(/^\S+\s/, ""),
+                            location: `${project.location.city}, ${project.location.state}`,
+                            type: "generation",
+                          })}
+                          className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-medium hover:bg-amber-500/20 transition-all duration-200"
+                        >
+                          <Award className="w-3.5 h-3.5" /> Cert
+                        </button>
+                      )}
+                      </div>
                     </div>
                   </div>
                 );
@@ -430,6 +449,14 @@ export default function FarmerDashboard() {
 
         </div>
       </main>
+
+      {/* Certificate Modal */}
+      {certData && (
+        <CertificateGenerator
+          {...certData}
+          onClose={() => setCertData(null)}
+        />
+      )}
 
       {/* ── Keyframes ── */}
       <style>{`

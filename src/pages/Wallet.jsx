@@ -4,12 +4,13 @@ import { useApp } from "../context/AppContext";
 import {
   ArrowUpRight, ArrowDownLeft, ChevronLeft, X, Minus, Plus,
   Wallet as WalletIcon, TrendingUp, Clock, ShieldCheck, Send,
-  History, CreditCard, Sparkles, Check,
+  History, CreditCard, Sparkles, Check, Download, FileText,
 } from "lucide-react";
 import {
   LineChart, Line, AreaChart, Area, ResponsiveContainer,
 } from "recharts";
 import { usePriceSimulator } from "../utils/priceSimulator";
+import CertificateGenerator from "../components/CertificateGenerator";
 
 /* mock sparkline data removed — now using usePriceSimulator */
 
@@ -121,6 +122,7 @@ export default function Wallet() {
   const [sellAmt, setSellAmt] = useState(10);
   const [sellPrice, setSellPrice] = useState(600);
   const [toast, setToast] = useState("");
+  const [certData, setCertData] = useState(null);
 
   const handleSell = useCallback(() => {
     setToast(`Sold ${sellAmt} credits for ₹${(sellAmt * sellPrice).toLocaleString()}`);
@@ -247,8 +249,8 @@ export default function Wallet() {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-white/[0.04]">
-                      {["Date", "Type", "Project / Company", "Credits", "Value (INR)", "Status"].map((h) => (
-                        <th key={h} className="px-6 py-3 text-left text-[10px] font-semibold text-gray-600 uppercase tracking-wider">{h}</th>
+                      {["Date", "Type", "Project / Company", "Credits", "Value (INR)", "Status", ""].map((h) => (
+                        <th key={h || "cert"} className="px-6 py-3 text-left text-[10px] font-semibold text-gray-600 uppercase tracking-wider">{h}</th>
                       ))}
                     </tr>
                   </thead>
@@ -276,6 +278,24 @@ export default function Wallet() {
                               <span className={`w-1.5 h-1.5 rounded-full ${tx.status === "completed" ? "bg-emerald-400" : "bg-yellow-400"}`} />
                               {tx.status}
                             </span>
+                          </td>
+                          <td className="px-6 py-3.5">
+                            {tx.status === "completed" && (
+                              <button
+                                onClick={() => setCertData({
+                                  recipientName: user.name,
+                                  creditsAmount: tx.credits,
+                                  projectTitle: tx.desc,
+                                  projectType: tx.type === "earned" ? "Tree Plantation" : "Carbon Credits",
+                                  location: "Madhya Pradesh, India",
+                                  date: tx.date,
+                                  type: tx.type === "earned" ? "generation" : "offset",
+                                })}
+                                className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-semibold hover:bg-emerald-500/20 transition-all"
+                              >
+                                <FileText className="w-3 h-3" /> Cert
+                              </button>
+                            )}
                           </td>
                         </tr>
                       );
@@ -364,6 +384,14 @@ export default function Wallet() {
 
       {/* Toast */}
       {toast && <Toast message={toast} onClose={() => setToast("")} />}
+
+      {/* Certificate Modal */}
+      {certData && (
+        <CertificateGenerator
+          {...certData}
+          onClose={() => setCertData(null)}
+        />
+      )}
 
       <style>{`
         @keyframes fadeUp { 0% { opacity:0; transform:translateY(12px); } 100% { opacity:1; transform:translateY(0); } }

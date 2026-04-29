@@ -11,6 +11,7 @@ import {
   Tooltip, ResponsiveContainer, Legend,
 } from "recharts";
 import PriceTicker from "../components/PriceTicker";
+import CertificateGenerator from "../components/CertificateGenerator";
 
 /* ── Chart data ── */
 const monthlyData = [
@@ -93,6 +94,7 @@ export default function CompanyDashboard() {
   const navigate = useNavigate();
   const { currentUser, notifications, logout } = useApp();
   const [toast, setToast] = useState("");
+  const [certData, setCertData] = useState(null);
 
   const user = currentUser || {
     id: "usr_004", name: "Tata Steel Industries", role: "company",
@@ -105,7 +107,6 @@ export default function CompanyDashboard() {
   const pct = Math.round((offset / total) * 100);
 
   const handleLogout = () => { logout(); navigate("/login"); };
-  const downloadCert = () => setToast("📄 Certificate Downloaded");
 
   return (
     <div className="min-h-screen flex bg-[#0f1117]">
@@ -239,8 +240,19 @@ export default function CompanyDashboard() {
                       <td className="px-6 py-3.5 text-sm text-gray-400">₹{p.amount.toLocaleString()}</td>
                       <td className="px-6 py-3.5">
                         {p.cert ? (
-                          <button onClick={downloadCert} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-sky-500/10 border border-sky-500/20 text-sky-400 text-xs font-semibold hover:bg-sky-500/20 transition-all">
-                            <Download className="w-3.5 h-3.5" /> Download
+                          <button
+                            onClick={() => setCertData({
+                              recipientName: user.name,
+                              creditsAmount: p.credits,
+                              projectTitle: p.type + " Credits from " + p.seller,
+                              projectType: p.type,
+                              location: "India",
+                              date: p.date,
+                              type: "offset",
+                            })}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-sky-500/10 border border-sky-500/20 text-sky-400 text-xs font-semibold hover:bg-sky-500/20 transition-all"
+                          >
+                            <Download className="w-3.5 h-3.5" /> Certificate
                           </button>
                         ) : <span className="text-xs text-gray-600">Pending</span>}
                       </td>
@@ -296,6 +308,14 @@ export default function CompanyDashboard() {
             <button onClick={() => setToast("")} className="text-sky-400/60 hover:text-sky-300"><X className="w-4 h-4" /></button>
           </div>
         </div>
+      )}
+
+      {/* Certificate Modal */}
+      {certData && (
+        <CertificateGenerator
+          {...certData}
+          onClose={() => setCertData(null)}
+        />
       )}
 
       <style>{`
