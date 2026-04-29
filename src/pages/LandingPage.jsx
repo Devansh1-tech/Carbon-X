@@ -408,8 +408,8 @@ function ImpactMap() {
           </h2>
         </div>
 
-        <div className="max-w-4xl mx-auto">
-          <ProjectMap projects={mockProjects} />
+        <div className="max-w-5xl mx-auto">
+          <ProjectMap projects={mockProjects} height="500px" />
         </div>
       </div>
     </section>

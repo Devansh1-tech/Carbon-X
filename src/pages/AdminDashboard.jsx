@@ -65,6 +65,7 @@ export default function AdminDashboard() {
   const { projects, logout, notifications } = useApp();
   const [toast, setToast] = useState("");
   const [actionedIds, setActionedIds] = useState(new Set());
+  const [mapTab, setMapTab] = useState("charts");
 
   useEffect(() => { if (toast) { const t = setTimeout(() => setToast(""), 3500); return () => clearTimeout(t); } }, [toast]);
 
@@ -307,10 +308,74 @@ export default function AdminDashboard() {
             </div>
           </section>
 
-          {/* ── Project Locations Map ── */}
-          <section className="p-6 rounded-2xl bg-[#10131c] border border-white/[0.06]">
-            <h2 className="text-lg font-bold text-white mb-6">Project Locations</h2>
-            <ProjectMap projects={projects} />
+          {/* ── Project Locations / Charts Tabbed Panel ── */}
+          <section className="rounded-2xl bg-[#10131c] border border-white/[0.06] overflow-hidden">
+            <div className="p-6 pb-0 flex items-center justify-between">
+              <h2 className="text-lg font-bold text-white">Project Intelligence</h2>
+              <div className="flex gap-1">
+                {["charts", "map"].map((t) => (
+                  <button key={t} onClick={() => setMapTab(t)}
+                    className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                      mapTab === t
+                        ? "bg-amber-500/15 text-amber-400 border border-amber-500/25"
+                        : "text-gray-500 hover:text-gray-300 border border-transparent"
+                    }`}>
+                    {t === "charts" ? "📊 Charts" : "🗺️ Map"}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="p-6">
+              {mapTab === "map" ? (
+                <ProjectMap projects={projects} height="450px" />
+              ) : (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Platform Activity */}
+                  <div className="rounded-xl bg-white/[0.02] border border-white/[0.04] p-4">
+                    <h3 className="text-sm font-bold text-gray-300 mb-4">Daily Platform Activity</h3>
+                    <div className="h-[200px]">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={dailyActivity}>
+                          <defs>
+                            <linearGradient id="admGreen" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="0%" stopColor="#10b981" stopOpacity={0.3} />
+                              <stop offset="100%" stopColor="#10b981" stopOpacity={0} />
+                            </linearGradient>
+                            <linearGradient id="admBlue" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="0%" stopColor="#0ea5e9" stopOpacity={0.3} />
+                              <stop offset="100%" stopColor="#0ea5e9" stopOpacity={0} />
+                            </linearGradient>
+                          </defs>
+                          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+                          <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: "#6b7280", fontSize: 11 }} />
+                          <YAxis axisLine={false} tickLine={false} tick={{ fill: "#6b7280", fontSize: 11 }} />
+                          <Tooltip content={<ChartTip />} />
+                          <Area type="monotone" dataKey="issued" stroke="#10b981" fill="url(#admGreen)" strokeWidth={2} />
+                          <Area type="monotone" dataKey="traded" stroke="#0ea5e9" fill="url(#admBlue)" strokeWidth={2} />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+                  {/* Geo Distribution */}
+                  <div className="rounded-xl bg-white/[0.02] border border-white/[0.04] p-4">
+                    <h3 className="text-sm font-bold text-gray-300 mb-4">Credits by State</h3>
+                    <div className="h-[200px]">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={geoData} layout="vertical">
+                          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+                          <XAxis type="number" axisLine={false} tickLine={false} tick={{ fill: "#6b7280", fontSize: 11 }} />
+                          <YAxis type="category" dataKey="state" axisLine={false} tickLine={false} tick={{ fill: "#9ca3af", fontSize: 11 }} width={100} />
+                          <Tooltip content={<ChartTip />} />
+                          <Bar dataKey="credits" radius={[0, 6, 6, 0]} barSize={20}>
+                            {geoData.map((e, i) => <Cell key={i} fill={e.fill} />)}
+                          </Bar>
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           </section>
 
         </div>
