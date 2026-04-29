@@ -8,10 +8,12 @@ import AdminDashboard from './pages/AdminDashboard'
 import ProjectSubmission from './pages/ProjectSubmission'
 import Wallet from './pages/Wallet'
 import Marketplace from './pages/Marketplace'
+import Watchlist from './pages/Watchlist'
 import OnboardingFlow from './pages/OnboardingFlow'
 import AnalyticsDashboard from './pages/AnalyticsDashboard'
 import ToastContainer from './components/Toast'
 import NotificationCenter from './components/NotificationCenter'
+import GlobalSearch from './components/GlobalSearch'
 
 /* ── Loading overlay ── */
 function LoadingOverlay() {
@@ -54,6 +56,7 @@ function AnimatedRoutes() {
           <Route path="/submit-project" element={<ProjectSubmission />} />
           <Route path="/wallet" element={<Wallet />} />
           <Route path="/marketplace" element={<Marketplace />} />
+          <Route path="/watchlist" element={<Watchlist />} />
           <Route path="/analytics" element={<AnalyticsDashboard />} />
         </Routes>
       </div>
@@ -62,12 +65,31 @@ function AnimatedRoutes() {
 }
 
 function App() {
+  const [globalSearchOpen, setGlobalSearchOpen] = useState(false)
+
+  useEffect(() => {
+    const handler = () => setGlobalSearchOpen((v) => !v)
+    document.addEventListener('toggle-global-search', handler)
+    const kbHandler = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault()
+        setGlobalSearchOpen((v) => !v)
+      }
+    }
+    document.addEventListener('keydown', kbHandler)
+    return () => {
+      document.removeEventListener('toggle-global-search', handler)
+      document.removeEventListener('keydown', kbHandler)
+    }
+  }, [])
+
   return (
     <Router>
       <div className="min-h-screen bg-carbon">
         <AnimatedRoutes />
         <ToastContainer />
         <NotificationCenter />
+        <GlobalSearch isOpen={globalSearchOpen} onClose={() => setGlobalSearchOpen(false)} />
         {/* Demo badge */}
         <div className="fixed bottom-4 left-4 z-[200] px-3 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.08] backdrop-blur-sm">
           <span className="text-[11px] text-gray-500 font-medium">🎭 Hackathon Demo</span>

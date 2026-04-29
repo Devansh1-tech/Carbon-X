@@ -67,6 +67,9 @@ const initialState = {
   // Onboarding
   isNewUser: false,
   onboardingProfile: {},
+
+  // Watchlist
+  watchlist: [],
 };
 
 /* ── Helper: create a rich notification ── */
@@ -246,6 +249,18 @@ function appReducer(state, action) {
         onboardingProfile: action.payload || {},
       };
 
+    /* ── Watchlist ── */
+    case "TOGGLE_WATCHLIST": {
+      const listing = action.payload;
+      const exists = state.watchlist.some((w) => w.id === listing.id);
+      return {
+        ...state,
+        watchlist: exists
+          ? state.watchlist.filter((w) => w.id !== listing.id)
+          : [...state.watchlist, listing],
+      };
+    }
+
     default:
       return state;
   }
@@ -411,6 +426,11 @@ export function AppProvider({ children }) {
     dispatch({ type: "COMPLETE_ONBOARDING", payload: profileData });
   }, []);
 
+  /* ── Watchlist helper ── */
+  const toggleWatchlist = useCallback((listing) => {
+    dispatch({ type: "TOGGLE_WATCHLIST", payload: listing });
+  }, []);
+
   return (
     <AppContext.Provider
       value={{
@@ -432,6 +452,7 @@ export function AppProvider({ children }) {
         addActivity,
         triggerPriceAlert,
         completeOnboarding,
+        toggleWatchlist,
         MOCK_ACTIVITIES,
       }}
     >
