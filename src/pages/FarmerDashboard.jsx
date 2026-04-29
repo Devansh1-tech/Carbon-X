@@ -4,7 +4,7 @@ import { useApp } from "../context/AppContext";
 import {
   LayoutDashboard, FolderPlus, FolderKanban, Wallet, Store,
   LogOut, Bell, TrendingUp, TrendingDown, Leaf, TreePine,
-  MapPin, ArrowRight, Plus, ChevronRight, Bot, Award, BarChart3,
+  MapPin, ArrowRight, Plus, ChevronRight, Bot, Award, BarChart3, Trophy,
 } from "lucide-react";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -13,6 +13,7 @@ import { getAIRecommendation } from "../utils/geminiAI";
 import PriceTicker from "../components/PriceTicker";
 import CertificateGenerator from "../components/CertificateGenerator";
 import ActivityFeed from "../components/ActivityFeed";
+import { getBadge, getNextBadge } from "../utils/badges";
 
 /* ── Chart mock data ── */
 const chartData = [
@@ -47,6 +48,7 @@ const NAV = [
   { to: "/dashboard/farmer", icon: FolderKanban, label: "My Projects", end: false },
   { to: "/wallet", icon: Wallet, label: "Wallet" },
   { to: "/marketplace", icon: Store, label: "Marketplace" },
+  { to: "/leaderboard", icon: Trophy, label: "Leaderboard" },
   { to: "/analytics", icon: BarChart3, label: "Analytics" },
 ];
 
@@ -231,6 +233,22 @@ export default function FarmerDashboard() {
                 </div>
                 <p className="text-3xl font-bold text-emerald-400">{totalCredits}</p>
                 <p className="text-xs text-gray-500 mt-1">Lifetime earnings</p>
+                {/* Badge progress bar */}
+                {(() => {
+                  const next = getNextBadge(totalCredits);
+                  const badge = getBadge(totalCredits);
+                  return (
+                    <div className="mt-3">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-[10px] text-gray-500">{badge.emoji} {badge.name}</span>
+                        <span className="text-[10px] text-gray-600">{next.remaining > 0 ? `${next.remaining} to ${next.emoji} ${next.name}` : "Max level!"}</span>
+                      </div>
+                      <div className="h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
+                        <div className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-green-400 transition-all duration-500" style={{ width: `${next.progress}%` }} />
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
 
               {/* Card 2 — Wallet Balance */}
@@ -273,6 +291,32 @@ export default function FarmerDashboard() {
                 <p className="text-3xl font-bold text-teal-400">{co2Saved} <span className="text-lg font-medium text-teal-400/60">tons</span></p>
                 <p className="text-xs text-gray-500 mt-1">Carbon offset impact</p>
               </div>
+            </div>
+          </section>
+
+          {/* ── Streak & Badge Row ── */}
+          <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Streak */}
+            <div className="p-5 rounded-2xl bg-gradient-to-br from-orange-500/10 to-orange-500/[0.03] border border-orange-500/10">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Activity Streak</span>
+                <span className="text-2xl">🔥</span>
+              </div>
+              <p className="text-3xl font-bold text-orange-400">{user.streak || 0} <span className="text-lg font-medium text-orange-400/60">days</span></p>
+              <p className="text-xs text-gray-500 mt-1">Keep submitting projects daily!</p>
+            </div>
+            {/* Badge Card */}
+            <div className="p-5 rounded-2xl bg-gradient-to-br from-amber-500/10 to-amber-500/[0.03] border border-amber-500/10">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Your Badge</span>
+                <span className="text-2xl">{getBadge(totalCredits).emoji}</span>
+              </div>
+              <p className="text-xl font-bold text-amber-400">{getBadge(totalCredits).name}</p>
+              <p className="text-xs text-gray-500 mt-1">
+                {getNextBadge(totalCredits).remaining > 0
+                  ? `${getNextBadge(totalCredits).remaining} more credits to ${getNextBadge(totalCredits).emoji} ${getNextBadge(totalCredits).name}`
+                  : "You've reached the highest tier! 🏆"}
+              </p>
             </div>
           </section>
 
