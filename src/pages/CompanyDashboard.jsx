@@ -45,7 +45,7 @@ const milestones = [
 const NAV = [
   { to: "/dashboard/company", icon: LayoutDashboard, label: "Overview" },
   { to: "/marketplace", icon: ShoppingCart, label: "Buy Credits" },
-  { to: "/dashboard/company", icon: BarChart3, label: "Emissions Tracker" },
+  { to: "/analytics", icon: BarChart3, label: "Analytics" },
   { to: "/dashboard/company", icon: FileText, label: "Reports" },
   { to: "/dashboard/company", icon: Settings, label: "Settings" },
 ];

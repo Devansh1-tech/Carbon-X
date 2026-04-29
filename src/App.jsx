@@ -8,6 +8,7 @@ import AdminDashboard from './pages/AdminDashboard'
 import ProjectSubmission from './pages/ProjectSubmission'
 import Wallet from './pages/Wallet'
 import Marketplace from './pages/Marketplace'
+import AnalyticsDashboard from './pages/AnalyticsDashboard'
 import ToastContainer from './components/Toast'
 
 /* ── Loading overlay ── */
@@ -50,6 +51,7 @@ function AnimatedRoutes() {
           <Route path="/submit-project" element={<ProjectSubmission />} />
           <Route path="/wallet" element={<Wallet />} />
           <Route path="/marketplace" element={<Marketplace />} />
+          <Route path="/analytics" element={<AnalyticsDashboard />} />
         </Routes>
       </div>
     </>

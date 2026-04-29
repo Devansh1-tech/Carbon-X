@@ -4,7 +4,7 @@ import { useApp } from "../context/AppContext";
 import {
   LayoutDashboard, FolderPlus, FolderKanban, Wallet, Store,
   LogOut, Bell, TrendingUp, TrendingDown, Leaf, TreePine,
-  MapPin, ArrowRight, Plus, ChevronRight, Bot, Award,
+  MapPin, ArrowRight, Plus, ChevronRight, Bot, Award, BarChart3,
 } from "lucide-react";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -53,6 +53,7 @@ const NAV = [
   { to: "/dashboard/farmer", icon: FolderKanban, label: "My Projects", end: false },
   { to: "/wallet", icon: Wallet, label: "Wallet" },
   { to: "/marketplace", icon: Store, label: "Marketplace" },
+  { to: "/analytics", icon: BarChart3, label: "Analytics" },
 ];
 
 /* ── Custom chart tooltip ── */
