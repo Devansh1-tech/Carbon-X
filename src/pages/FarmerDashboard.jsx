@@ -10,6 +10,7 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
 import { getAIRecommendation } from "../utils/geminiAI";
+import PriceTicker from "../components/PriceTicker";
 
 /* ── Chart mock data ── */
 const chartData = [
@@ -211,6 +212,8 @@ export default function FarmerDashboard() {
             </div>
           </div>
         </header>
+
+        <PriceTicker />
 
         {/* ── Content ── */}
         <div className="flex-1 px-6 lg:px-10 py-8 space-y-8">

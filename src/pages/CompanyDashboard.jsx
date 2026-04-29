@@ -10,6 +10,7 @@ import {
   ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, Legend,
 } from "recharts";
+import PriceTicker from "../components/PriceTicker";
 
 /* ── Chart data ── */
 const monthlyData = [
@@ -162,6 +163,8 @@ export default function CompanyDashboard() {
             </div>
           </div>
         </header>
+
+        <PriceTicker />
 
         <div className="flex-1 px-6 lg:px-10 py-8 space-y-8">
 

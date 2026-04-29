@@ -4,6 +4,7 @@ import { useApp } from "../context/AppContext";
 import { mockUsers } from "../data/mockUsers";
 import { mockTransactions } from "../data/mockTransactions";
 import ProjectMap from "../components/ProjectMap";
+import PriceTicker from "../components/PriceTicker";
 import {
   LayoutDashboard, FolderKanban, Users, ArrowLeftRight, BarChart3,
   Settings, LogOut, TrendingUp, Leaf, TreePine, Globe, IndianRupee,
@@ -141,6 +142,8 @@ export default function AdminDashboard() {
             </div>
           </div>
         </header>
+
+        <PriceTicker />
 
         <div className="flex-1 px-6 lg:px-10 py-8 space-y-8">
 

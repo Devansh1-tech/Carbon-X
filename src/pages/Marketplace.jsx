@@ -11,6 +11,8 @@ import {
   Tooltip, ResponsiveContainer,
 } from "recharts";
 import { generateMarketInsight } from "../utils/geminiAI";
+import LivePriceChart from "../components/LivePriceChart";
+import PriceTicker from "../components/PriceTicker";
 
 /* ── Chart data ── */
 const tradedByType = [
@@ -187,7 +189,14 @@ export default function Marketplace() {
         </div>
       </header>
 
+      {/* Price Ticker Marquee */}
+      <PriceTicker />
+
       <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-8">
+        {/* Live Price Chart */}
+        <div className="mb-8">
+          <LivePriceChart />
+        </div>
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold text-white">Carbon Credit Marketplace</h1>

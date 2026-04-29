@@ -7,14 +7,11 @@ import {
   History, CreditCard, Sparkles, Check,
 } from "lucide-react";
 import {
-  LineChart, Line, ResponsiveContainer,
+  LineChart, Line, AreaChart, Area, ResponsiveContainer,
 } from "recharts";
+import { usePriceSimulator } from "../utils/priceSimulator";
 
-/* ── Mock sparkline data (7 days) ── */
-const priceHistory = [
-  { d: 1, p: 570 }, { d: 2, p: 580 }, { d: 3, p: 575 },
-  { d: 4, p: 590 }, { d: 5, p: 595 }, { d: 6, p: 605 }, { d: 7, p: 600 },
-];
+/* mock sparkline data removed — now using usePriceSimulator */
 
 /* ── Extended wallet transactions (enriched from mock) ── */
 const walletTxns = [
@@ -47,6 +44,47 @@ function Toast({ message, onClose }) {
         <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center"><Check className="w-4 h-4 text-emerald-400" /></div>
         <span className="text-emerald-300 text-sm font-medium">{message}</span>
         <button onClick={onClose} className="ml-2 text-emerald-400/60 hover:text-emerald-300 transition-colors"><X className="w-4 h-4" /></button>
+      </div>
+    </div>
+  );
+}
+
+/* ── Mini live price widget ── */
+function CreditValueWidget() {
+  const { currentPrice, percentChange, direction, priceHistory } = usePriceSimulator(608, 20);
+  const up = direction === "up";
+  const color = up ? "#10b981" : "#ef4444";
+  return (
+    <div className="p-5 rounded-xl bg-[#151823] border border-white/[0.06]">
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-amber-400" />
+          <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Market Rate</span>
+        </div>
+        <span className={`flex items-center gap-1 text-xs font-semibold ${up ? "text-emerald-400" : "text-red-400"}`}>
+          <TrendingUp className="w-3.5 h-3.5" /> {up ? "+" : ""}{percentChange}%
+        </span>
+      </div>
+      <p className="text-2xl font-bold text-white mb-0.5 tabular-nums">1 CC = ₹{currentPrice.toFixed(0)}</p>
+      <div className="h-12 w-full mt-2 mb-2">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={priceHistory}>
+            <defs>
+              <linearGradient id="walletGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={color} stopOpacity={0.3} />
+                <stop offset="100%" stopColor={color} stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <Area type="monotone" dataKey="price" stroke={color} strokeWidth={2} fill="url(#walletGrad)" dot={false} />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+      <div className="flex items-center gap-2">
+        <span className="relative flex h-2 w-2">
+          <span className="absolute inline-flex h-full w-full rounded-full opacity-75 animate-ping" style={{ backgroundColor: color }} />
+          <span className="relative inline-flex rounded-full h-2 w-2" style={{ backgroundColor: color }} />
+        </span>
+        <p className="text-[11px] text-gray-600">Live • Updates every 3s</p>
       </div>
     </div>
   );
@@ -177,27 +215,8 @@ export default function Wallet() {
               ))}
             </div>
 
-            {/* Credit value ticker */}
-            <div className="p-5 rounded-xl bg-[#151823] border border-white/[0.06]">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-amber-400" />
-                  <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Market Rate</span>
-                </div>
-                <span className="flex items-center gap-1 text-emerald-400 text-xs font-semibold">
-                  <TrendingUp className="w-3.5 h-3.5" /> +5.2%
-                </span>
-              </div>
-              <p className="text-2xl font-bold text-white mb-0.5">1 CC = ₹600</p>
-              <div className="h-12 w-full mt-2 mb-2">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={priceHistory}>
-                    <Line type="monotone" dataKey="p" stroke="#10b981" strokeWidth={2} dot={false} />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-              <p className="text-[11px] text-gray-600">Market rate updated 2 hours ago</p>
-            </div>
+            {/* Credit value ticker — LIVE */}
+            <CreditValueWidget />
           </div>
 
           {/* ════ RIGHT COLUMN ════ */}
