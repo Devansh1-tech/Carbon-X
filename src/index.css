@@ -199,3 +199,8 @@ select option {
   animation: countUp 0.5s ease-out;
 }
 
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+

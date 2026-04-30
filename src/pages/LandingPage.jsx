@@ -1,22 +1,18 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import ProjectMap from "../components/ProjectMap";
+import SignUpModal from "../components/SignUpModal";
+import LoginModal from "../components/LoginModal";
 import { mockProjects } from "../data/mockProjects";
-import {
-  TreePine,
-  Bot,
-  Coins,
-  Leaf,
-  Users,
-  Building2,
-  ShieldCheck,
-  ChevronRight,
-  ArrowRight,
-  Globe,
-  TrendingUp,
-  Sprout,
-  Award,
-} from "lucide-react";
+
+/* ── New animated sections ── */
+import TheProblem from "../components/landing/TheProblem";
+import HowItWorksTimeline from "../components/landing/HowItWorksTimeline";
+import WhoIsItFor from "../components/landing/WhoIsItFor";
+import LiveImpact from "../components/landing/LiveImpact";
+import Testimonials from "../components/landing/Testimonials";
+import FinalCTA from "../components/landing/FinalCTA";
+
+import { ArrowRight, Globe } from "lucide-react";
 
 /* ── Animated counter hook ── */
 function useCounter(target, duration = 2200) {
@@ -48,7 +44,7 @@ function useCounter(target, duration = 2200) {
   return { value, ref };
 }
 
-/* ── Floating particles (CSS-in-JS for dynamic positions) ── */
+/* ── Floating particles ── */
 function Particles() {
   const dots = Array.from({ length: 24 }, (_, i) => ({
     id: i,
@@ -78,7 +74,7 @@ function Particles() {
 }
 
 /* ═══════════════════ NAVBAR ═══════════════════ */
-function Navbar() {
+function Navbar({ onLoginClick, onSignUpClick }) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -90,11 +86,10 @@ function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
           ? "bg-carbon/80 backdrop-blur-xl shadow-lg shadow-black/20 border-b border-white/5"
           : "bg-transparent"
-      }`}
+        }`}
     >
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         {/* Logo */}
@@ -120,18 +115,19 @@ function Navbar() {
 
         {/* CTA buttons */}
         <div className="hidden md:flex items-center gap-3">
-          <Link
-            to="/login?role=farmer"
+          <button
+            onClick={onLoginClick}
             className="px-5 py-2 text-sm font-medium text-emerald-400 border border-emerald-400/30 rounded-full hover:bg-emerald-400/10 transition-all"
           >
-            Login as Farmer
-          </Link>
-          <Link
-            to="/login?role=company"
-            className="px-5 py-2 text-sm font-medium text-carbon bg-gradient-to-r from-emerald-400 to-green-400 rounded-full hover:shadow-lg hover:shadow-emerald-500/25 hover:-translate-y-0.5 transition-all"
+            Login
+          </button>
+          <button
+            onClick={onSignUpClick}
+            className="px-6 py-2.5 text-sm font-semibold text-carbon bg-gradient-to-r from-emerald-400 to-green-400 rounded-full hover:shadow-lg hover:shadow-emerald-500/25 hover:-translate-y-0.5 transition-all"
+            style={{ boxShadow: "0 0 20px rgba(16,185,129,0.15)" }}
           >
-            Login as Company
-          </Link>
+            Sign Up Free
+          </button>
         </div>
 
         {/* Mobile toggle */}
@@ -150,8 +146,8 @@ function Navbar() {
           <a href="#how-it-works" onClick={() => setMobileOpen(false)} className="text-gray-400 hover:text-emerald-400 transition-colors">How it Works</a>
           <Link to="/marketplace" onClick={() => setMobileOpen(false)} className="text-gray-400 hover:text-emerald-400 transition-colors">Marketplace</Link>
           <a href="#impact" onClick={() => setMobileOpen(false)} className="text-gray-400 hover:text-emerald-400 transition-colors">Impact</a>
-          <Link to="/login?role=farmer" className="text-center py-2 text-sm border border-emerald-400/30 rounded-full text-emerald-400">Login as Farmer</Link>
-          <Link to="/login?role=company" className="text-center py-2 text-sm bg-gradient-to-r from-emerald-400 to-green-400 rounded-full text-carbon font-medium">Login as Company</Link>
+          <button onClick={() => { setMobileOpen(false); onLoginClick?.(); }} className="text-center py-2 text-sm border border-emerald-400/30 rounded-full text-emerald-400">Login</button>
+          <button onClick={() => { setMobileOpen(false); onSignUpClick?.(); }} className="text-center py-2 text-sm bg-gradient-to-r from-emerald-400 to-green-400 rounded-full text-carbon font-medium">Sign Up Free</button>
         </div>
       )}
     </nav>
@@ -159,7 +155,7 @@ function Navbar() {
 }
 
 /* ═══════════════════ HERO ═══════════════════ */
-function Hero() {
+function Hero({ onSignUpClick }) {
   const counter = useCounter(12847, 3000);
 
   return (
@@ -194,19 +190,19 @@ function Hero() {
 
         {/* CTAs */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-          <Link
-            to="/login?role=farmer"
+          <button
+            onClick={() => onSignUpClick?.("farmer")}
             className="group flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-emerald-500 to-green-500 text-carbon font-semibold rounded-full text-lg hover:shadow-2xl hover:shadow-emerald-500/30 hover:-translate-y-1 transition-all duration-300"
           >
             Start Earning Credits
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </Link>
-          <Link
-            to="/login?role=company"
+          </button>
+          <button
+            onClick={() => onSignUpClick?.("company")}
             className="flex items-center gap-2 px-8 py-4 border border-emerald-400/30 text-emerald-400 font-semibold rounded-full text-lg hover:bg-emerald-400/10 hover:-translate-y-1 transition-all duration-300"
           >
             Offset My Emissions
-          </Link>
+          </button>
         </div>
 
         {/* Live counter */}
@@ -221,197 +217,6 @@ function Hero() {
 
       {/* Bottom gradient fade */}
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-carbon to-transparent pointer-events-none" />
-    </section>
-  );
-}
-
-/* ═══════════════════ HOW IT WORKS ═══════════════════ */
-function HowItWorks() {
-  const steps = [
-    {
-      icon: TreePine,
-      title: "Submit Your Green Project",
-      desc: "Upload details of your tree plantation, soil restoration, or renewable energy project.",
-      step: "01",
-    },
-    {
-      icon: Bot,
-      title: "AI Verifies & Generates Credits",
-      desc: "Our AI analyzes satellite data, soil reports, and imagery to validate and assign carbon credits.",
-      step: "02",
-    },
-    {
-      icon: Coins,
-      title: "Sell Credits, Earn Income",
-      desc: "List your verified credits on the marketplace. Companies buy them to offset their emissions.",
-      step: "03",
-    },
-  ];
-
-  return (
-    <section id="how-it-works" className="relative py-24 bg-carbon">
-      <div className="max-w-7xl mx-auto px-6">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <span className="inline-block px-4 py-1 mb-4 text-xs font-semibold tracking-widest uppercase text-emerald-400 border border-emerald-400/20 rounded-full bg-emerald-400/5">
-            How it Works
-          </span>
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            Three Simple{" "}
-            <span className="bg-gradient-to-r from-emerald-400 to-green-300 bg-clip-text text-transparent">
-              Steps
-            </span>
-          </h2>
-          <p className="text-gray-400 max-w-xl mx-auto">
-            From green action to real income — here's how the CarbonX platform works.
-          </p>
-        </div>
-
-        {/* Steps grid */}
-        <div className="grid md:grid-cols-3 gap-8 relative">
-          {/* Dashed connector line */}
-          <div className="hidden md:block absolute top-24 left-[20%] right-[20%] border-t-2 border-dashed border-emerald-400/20" />
-
-          {steps.map((s, i) => (
-            <div
-              key={i}
-              className="relative group bg-gradient-to-b from-white/[0.04] to-transparent border border-white/[0.06] rounded-2xl p-8 text-center hover:border-emerald-400/30 hover:-translate-y-2 transition-all duration-300"
-            >
-              {/* Step number */}
-              <div className="w-12 h-12 mx-auto mb-6 rounded-full bg-gradient-to-br from-emerald-500 to-green-500 flex items-center justify-center text-carbon font-bold text-lg shadow-lg shadow-emerald-500/20 relative z-10">
-                {s.step}
-              </div>
-              {/* Icon */}
-              <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-emerald-400/10 border border-emerald-400/20 flex items-center justify-center group-hover:bg-emerald-400/15 transition-colors">
-                <s.icon className="w-7 h-7 text-emerald-400" />
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-3">{s.title}</h3>
-              <p className="text-gray-500 text-sm leading-relaxed">{s.desc}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ═══════════════════ STATS BAR ═══════════════════ */
-function StatsBar() {
-  const farmers = useCounter(2340);
-  const projects = useCounter(890);
-  const paidOut = useCounter(42);
-  const co2 = useCounter(18000);
-
-  const stats = [
-    { ref: farmers.ref, value: `${farmers.value.toLocaleString()}+`, label: "Farmers Onboarded", icon: Users },
-    { ref: projects.ref, value: `${projects.value.toLocaleString()}`, label: "Projects Verified", icon: ShieldCheck },
-    { ref: paidOut.ref, value: `₹${paidOut.value} Cr`, label: "Paid Out", icon: TrendingUp },
-    { ref: co2.ref, value: `${co2.value.toLocaleString()}`, label: "Tons CO₂ Saved", icon: Leaf },
-  ];
-
-  return (
-    <section className="relative py-16 bg-gradient-to-r from-emerald-500/10 via-green-500/5 to-emerald-500/10 border-y border-emerald-400/10">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-          {stats.map((s, i) => (
-            <div key={i} ref={s.ref} className="text-center group">
-              <s.icon className="w-6 h-6 mx-auto mb-3 text-emerald-400 group-hover:scale-110 transition-transform" />
-              <div className="text-3xl md:text-4xl font-bold text-white mb-1 tabular-nums">
-                {s.value}
-              </div>
-              <div className="text-sm text-gray-500">{s.label}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ═══════════════════ PARTICIPANTS ═══════════════════ */
-function Participants() {
-  const cards = [
-    {
-      icon: Sprout,
-      title: "Farmers & NGOs",
-      desc: "Submit green projects, get AI-verified, and earn carbon credits for your sustainable work.",
-      accent: "from-emerald-500 to-green-500",
-      border: "hover:border-emerald-400/40",
-    },
-    {
-      icon: Building2,
-      title: "Companies",
-      desc: "Buy verified carbon credits to offset your emissions and meet sustainability goals with confidence.",
-      accent: "from-sky-500 to-cyan-400",
-      border: "hover:border-sky-400/40",
-    },
-    {
-      icon: Award,
-      title: "CarbonX Platform",
-      desc: "AI-powered verification, blockchain-ready transparency, and a fair marketplace for everyone.",
-      accent: "from-amber-400 to-yellow-400",
-      border: "hover:border-amber-400/40",
-    },
-  ];
-
-  return (
-    <section className="py-24 bg-carbon">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-16">
-          <span className="inline-block px-4 py-1 mb-4 text-xs font-semibold tracking-widest uppercase text-emerald-400 border border-emerald-400/20 rounded-full bg-emerald-400/5">
-            Who It's For
-          </span>
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            Built for{" "}
-            <span className="bg-gradient-to-r from-emerald-400 to-green-300 bg-clip-text text-transparent">
-              Every Stakeholder
-            </span>
-          </h2>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-8">
-          {cards.map((c, i) => (
-            <div
-              key={i}
-              className={`group relative bg-gradient-to-b from-white/[0.04] to-transparent border border-white/[0.06] rounded-2xl p-8 ${c.border} hover:-translate-y-2 transition-all duration-300`}
-            >
-              <div className={`w-14 h-14 mb-6 rounded-2xl bg-gradient-to-br ${c.accent} flex items-center justify-center shadow-lg`}>
-                <c.icon className="w-7 h-7 text-carbon" />
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-3">{c.title}</h3>
-              <p className="text-gray-500 text-sm leading-relaxed mb-5">{c.desc}</p>
-              <span className="inline-flex items-center gap-1 text-sm font-medium text-emerald-400 group-hover:gap-2 transition-all">
-                Learn more <ChevronRight className="w-4 h-4" />
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ═══════════════════ IMPACT MAP ═══════════════════ */
-function ImpactMap() {
-  return (
-    <section id="impact" className="py-24 bg-gradient-to-b from-carbon to-forest">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-12">
-          <span className="inline-block px-4 py-1 mb-4 text-xs font-semibold tracking-widest uppercase text-emerald-400 border border-emerald-400/20 rounded-full bg-emerald-400/5">
-            Our Reach
-          </span>
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            Impact Across{" "}
-            <span className="bg-gradient-to-r from-emerald-400 to-green-300 bg-clip-text text-transparent">
-              India
-            </span>
-          </h2>
-        </div>
-
-        <div className="max-w-5xl mx-auto">
-          <ProjectMap projects={mockProjects} height="500px" />
-        </div>
-      </div>
     </section>
   );
 }
@@ -439,17 +244,42 @@ function Footer() {
 
 /* ═══════════════════ LANDING PAGE ═══════════════════ */
 export default function LandingPage() {
+  const [showSignUp, setShowSignUp] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
+  const [signUpPreRole, setSignUpPreRole] = useState("");
+
+  const openSignUp = (role = "") => { setSignUpPreRole(role); setShowSignUp(true); };
+  const openLogin = () => setShowLogin(true);
+
   return (
     <div className="bg-carbon min-h-screen">
-      <Navbar />
-      <Hero />
-      <HowItWorks />
-      <StatsBar />
-      <Participants />
-      <ImpactMap />
+      <Navbar onLoginClick={openLogin} onSignUpClick={() => openSignUp()} />
+      <Hero onSignUpClick={openSignUp} />
+
+      {/* ── Animated Storytelling Sections ── */}
+      <TheProblem />
+      <HowItWorksTimeline />
+      <WhoIsItFor />
+      <LiveImpact projects={mockProjects} />
+      <Testimonials />
+      <FinalCTA onSignUp={openSignUp} />
+
       <Footer />
 
-      {/* Global keyframes for floating dots */}
+      {/* Auth Modals */}
+      <SignUpModal
+        isOpen={showSignUp}
+        onClose={() => setShowSignUp(false)}
+        onSwitchToLogin={() => setShowLogin(true)}
+        preselectedRole={signUpPreRole}
+      />
+      <LoginModal
+        isOpen={showLogin}
+        onClose={() => setShowLogin(false)}
+        onSwitchToSignUp={() => openSignUp()}
+      />
+
+      {/* Global keyframes */}
       <style>{`
         @keyframes floatDot {
           0%   { transform: translateY(0px) scale(1); opacity: 0.3; }
@@ -459,3 +289,4 @@ export default function LandingPage() {
     </div>
   );
 }
+
