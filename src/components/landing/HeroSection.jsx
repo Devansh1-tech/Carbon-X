@@ -159,18 +159,18 @@ function MorphingOrbs() {
 function FloatingStatCard({ icon: Icon, label, value, unit, delay, position }) {
   return (
     <div
-      className="absolute hidden xl:flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-white/[0.04] border border-white/[0.08] backdrop-blur-md shadow-xl z-[1]"
+      className="absolute hidden lg:flex items-center gap-3 px-5 py-3 rounded-2xl bg-white/[0.04] border border-white/[0.08] backdrop-blur-md shadow-xl"
       style={{
         ...position,
         animation: `heroCardFloat 6s ease-in-out ${delay}s infinite alternate, heroCardEntry 1s ease-out ${delay}s both`,
       }}
     >
-      <div className="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-        <Icon className="w-4 h-4 text-emerald-400" />
+      <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+        <Icon className="w-5 h-5 text-emerald-400" />
       </div>
       <div>
-        <p className="text-[10px] text-gray-500 uppercase tracking-wider">{label}</p>
-        <p className="text-base font-bold text-white">
+        <p className="text-xs text-gray-500 uppercase tracking-wider">{label}</p>
+        <p className="text-lg font-bold text-white">
           {value}
           <span className="text-emerald-400 text-sm ml-1">{unit}</span>
         </p>
@@ -270,14 +270,14 @@ export default function HeroSection({ onSignUpClick }) {
         }}
       />
 
-      {/* Floating stat cards — positioned in extreme corners to avoid overlap */}
+      {/* Floating stat cards */}
       <FloatingStatCard
         icon={Leaf}
         label="Credits Earned"
         value="2.4M"
         unit="tons"
         delay={0.8}
-        position={{ top: "15%", left: "3%" }}
+        position={{ top: "18%", left: "4%" }}
       />
       <FloatingStatCard
         icon={TrendingUp}
@@ -285,7 +285,7 @@ export default function HeroSection({ onSignUpClick }) {
         value="+147"
         unit="%"
         delay={1.2}
-        position={{ top: "12%", right: "3%" }}
+        position={{ top: "14%", right: "3%" }}
       />
       <FloatingStatCard
         icon={Shield}
@@ -293,7 +293,7 @@ export default function HeroSection({ onSignUpClick }) {
         value="1,283"
         unit=""
         delay={1.6}
-        position={{ bottom: "18%", left: "3%" }}
+        position={{ bottom: "24%", left: "3%" }}
       />
       <FloatingStatCard
         icon={Zap}
@@ -301,11 +301,11 @@ export default function HeroSection({ onSignUpClick }) {
         value="₹48K"
         unit="/mo"
         delay={2.0}
-        position={{ bottom: "14%", right: "3%" }}
+        position={{ bottom: "18%", right: "3%" }}
       />
 
       {/* Main content */}
-      <div className="relative z-10 max-w-5xl mx-auto px-6 text-center pt-28 pb-8">
+      <div className="relative z-10 max-w-5xl mx-auto px-6 text-center pt-24">
         {/* Animated badge */}
         <RevealText delay={200}>
           <div className="inline-flex items-center gap-2 px-5 py-2 mb-8 rounded-full border border-emerald-400/20 bg-emerald-400/5 text-emerald-400 text-sm font-medium hero-badge-glow">
@@ -353,7 +353,7 @@ export default function HeroSection({ onSignUpClick }) {
 
         {/* Typed subtitle */}
         <RevealText delay={1200}>
-          <p className="text-lg md:text-xl lg:text-2xl text-gray-400 max-w-2xl mx-auto mb-4 leading-relaxed">
+          <p className="text-lg md:text-xl lg:text-2xl text-gray-400 max-w-2xl mx-auto mb-8 leading-relaxed">
             AI-powered carbon credit marketplace built for{" "}
             <span className="text-2xl md:text-3xl font-semibold">
               <span className="bg-gradient-to-r from-emerald-400 to-green-300 bg-clip-text text-transparent">
@@ -364,9 +364,9 @@ export default function HeroSection({ onSignUpClick }) {
           </p>
         </RevealText>
 
-        {/* CTAs with animated entrance */}
+        {/* CTAs + Live counter — all on one row */}
         <RevealText delay={1600}>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
             <button
               onClick={() => onSignUpClick?.("farmer")}
               className="group relative flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-emerald-500 to-green-500 text-carbon font-semibold rounded-full text-lg overflow-hidden hover:shadow-2xl hover:shadow-emerald-500/30 hover:-translate-y-1 transition-all duration-300 btn-press"
@@ -385,26 +385,22 @@ export default function HeroSection({ onSignUpClick }) {
               Offset My Emissions
               <ArrowRight className="w-5 h-5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
             </button>
-          </div>
-        </RevealText>
 
-        {/* Live counter with enhanced animation */}
-        <RevealText delay={1800}>
-          <div className="mt-10">
+            {/* Live counter inline */}
             <div
               ref={counter.ref}
-              className="inline-flex items-center gap-4 px-7 py-4 rounded-2xl bg-white/[0.04] border border-white/[0.08] backdrop-blur-md hover:bg-white/[0.06] transition-colors duration-300"
+              className="inline-flex items-center gap-3 px-6 py-3.5 rounded-2xl bg-white/[0.04] border border-white/[0.08] backdrop-blur-md hover:bg-white/[0.06] transition-colors duration-300"
             >
               <div className="relative">
-                <Globe className="w-6 h-6 text-emerald-400" />
-                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-400 rounded-full animate-ping" />
-                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-400 rounded-full" />
+                <Globe className="w-5 h-5 text-emerald-400" />
+                <span className="absolute -top-1 -right-1 w-2 h-2 bg-emerald-400 rounded-full animate-ping" />
+                <span className="absolute -top-1 -right-1 w-2 h-2 bg-emerald-400 rounded-full" />
               </div>
               <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold text-white tabular-nums tracking-tight">
+                <span className="text-2xl font-bold text-white tabular-nums tracking-tight">
                   {counter.value.toLocaleString()}
                 </span>
-                <span className="text-gray-400 text-sm">tons CO₂ offset today</span>
+                <span className="text-gray-400 text-xs">tons CO₂ offset today</span>
               </div>
             </div>
           </div>
@@ -412,7 +408,7 @@ export default function HeroSection({ onSignUpClick }) {
 
         {/* Scroll indicator */}
         <div
-          className="mt-10 flex flex-col items-center gap-2 text-gray-600"
+          className="mt-8 flex flex-col items-center gap-2 text-gray-600"
           style={{ animation: "heroScrollBounce 2s ease-in-out 3s infinite" }}
         >
           <span className="text-xs uppercase tracking-[0.2em]">Scroll to explore</span>
