@@ -142,7 +142,7 @@ function calculateCredits(projectType, amount) {
 - Devansh Gupta 
 - Gourav Sharma
 - Raghav
-- Ourav
+- Sourav
 
 ---
 
