@@ -139,10 +139,10 @@ function calculateCredits(projectType, amount) {
 
 ## 🤝 Contributors
 
-- Your Name  
-- Teammate 1  
-- Teammate 2  
-- Teammate 3  
+- Devansh Gupta 
+- Gourav Sharma
+- Raghav
+- Ourav
 
 ---
 
